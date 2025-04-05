@@ -1,0 +1,154 @@
+# Quy tắc và mô hình đặc thù của dự án
+
+## Quy ước đặt tên
+
+### Components
+- PascalCase cho tên components
+- Suffix `Page` cho route components
+- Suffix `Form` cho form components
+- Suffix `List` cho list components
+```typescript
+StaffManagePage
+CreateStaffForm
+StaffList
+```
+
+### Files & Directories
+- PascalCase cho component files
+- kebab-case cho non-component files và directories
+- Suffix `Data` cho data/service files
+```
+staff-manage/
+  └── page.tsx
+StaffsData.tsx
+APIRoute.tsx
+```
+
+### Variables & Functions
+- camelCase cho variables và functions
+- Prefix `handle` cho event handlers
+- Prefix `fetch` cho data fetching functions
+```typescript
+const userData = {...}
+const handleSubmit = () => {...}
+const fetchUserData = async () => {...}
+```
+
+## Mô hình API Integration
+
+### Service Pattern
+```typescript
+const apiService = {
+  async create(data) {
+    const response = await axios.post(endpoint, data);
+    handleResponse(response);
+    return response.data.result;
+  }
+};
+```
+
+### Custom Hook Pattern
+```typescript
+export function useResource() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // CRUD operations
+  // Error handling
+  // Loading states
+}
+```
+
+## Error Handling
+
+### API Errors
+- Sử dụng toast notifications cho user feedback
+- Log errors trong development
+- Error code 1000 cho successful response
+
+### Form Validation
+- Required fields được đánh dấu với dấu *
+- Validation ngay khi blur field
+- Toast notifications cho form errors
+
+## UI/UX Patterns
+
+### Loading States
+- Spinner cho page loading
+- Skeleton cho data loading
+- Disabled buttons khi processing
+
+### Forms
+- Grid layout cho form fields
+- Inline validation messages
+- Confirmation modals cho destructive actions
+
+### Responsive Design
+- Mobile-first approach
+- Breakpoints:
+  - sm: 640px
+  - md: 768px
+  - lg: 1024px
+  - xl: 1280px
+
+## State Management
+
+### Local State
+- useState cho component state
+- useEffect cho side effects
+- Custom hooks cho complex logic
+
+### Global State
+- Context API cho auth state
+- JWT trong cookies
+- Toast notifications global
+
+## Code Organization
+
+### Component Structure
+```typescript
+// Imports
+// Types
+// Component
+// Styles (if needed)
+// Exports
+```
+
+### File Structure
+```
+src/
+├── app/          # Routes
+├── components/   # Shared components
+├── data/        # Data management
+└── public/      # Static files
+```
+
+## Development Workflow
+
+### Git Commits
+- Prefix với feature area
+- Viết theo dạng imperative
+```
+feat(staff): add staff management CRUD
+fix(auth): resolve token expiration issue
+```
+
+### Code Reviews
+- TypeScript strict mode pass
+- ESLint pass
+- No any types
+- Components documented
+- Error handling implemented
+
+## Performance Guidelines
+
+### Code Splitting
+- Dynamic imports cho large components
+- Route-based code splitting
+- Lazy loading cho images
+
+### Optimization
+- Memoization cho expensive computations
+- useMemo/useCallback khi cần thiết
+- Image optimization với Next.js
