@@ -18,6 +18,7 @@ public enum ErrorCode {
     STAFF_EXISTED(1009, "Staff already existed", HttpStatus.BAD_REQUEST),
     STAFF_NOT_FOUND(1010, "Staff not found", HttpStatus.NOT_FOUND),
     PET_NOT_FOUND(1011, "Pet not found", HttpStatus.NOT_FOUND),
+    SERVICE_CATEGORY_NOT_FOUND(1012, "Services category not found", HttpStatus.NOT_FOUND),
     UNCATEGORIZED(9999, "Uncategorized", HttpStatus.INTERNAL_SERVER_ERROR),
 
     ;
