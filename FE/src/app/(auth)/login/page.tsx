@@ -6,7 +6,8 @@ import axios from "axios";
 import { loginAPI } from "@/app/APIRoute";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
-import { UserOutlined, KeyOutlined } from "@ant-design/icons";
+import { UserOutlined, KeyOutlined, HomeOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -89,32 +90,40 @@ const Login = () => {
   };
 
     return (
-        <div className="flex flex-row h-screen items-center justify-center bg-blue-300">
-            <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
-                <img 
+<div className="flex min-h-screen items-center justify-center bg-blue-300 p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl flex flex-col md:flex-row overflow-hidden">
+                <div className="md:w-1/2 p-2">
+                    <img 
+                       src="/images/pet-login.jpg"
                        width={1000}
                        height={760}
-                       className="hidden md:block"
-                       alt="Screenshots of the login page"
-                />
-            </div>
-            <div className="w-96 h-auto p-6 bg-white rounded-lg shadow-lg flex items-center justify-center md:w-1/3">
-              <form className="space-y-3 w-full" onSubmit={handleSubmit}>
-                <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8 w-full" >
-                  <h1 className={`mb-3 text-2xl`}>
+                       className="w-full h-full object-cover rounded-lg"
+                       alt="Pet login"
+                    />
+                </div>
+                <div className="md:w-1/2 p-8 flex flex-col">
+                    <div className="flex justify-end mb-4">
+                        <Link href="/" className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors duration-200">
+                            <HomeOutlined />
+                            <span>Quay về trang chủ</span>
+                        </Link>
+                    </div>
+                    <div className="flex-1 flex items-center justify-center">
+                    <form className="space-y-6 w-full max-w-md" onSubmit={handleSubmit}>
+                  <h1 className="mb-6 text-2xl font-semibold text-gray-900">
                     Hãy đăng nhập để tiếp tục
                   </h1>
-                <div className="w-full">
-                  <div>
+                        <div className="w-full">
+                          <div>
                     <label
-                      className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+                    className="mb-2 block text-sm font-medium text-gray-900"
                       htmlFor="username"
                     >
                       Username
                     </label>
                     <div className="relative">
                       <input
-                        className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                        className="peer block w-full rounded-lg border border-gray-300 py-3 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                         id="username"
                         type="text"
                         name="username"
@@ -127,14 +136,14 @@ const Login = () => {
                   </div>
                   <div className="mt-4">
                     <label
-                      className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+                    className="mb-2 block text-sm font-medium text-gray-900"
                       htmlFor="password"
                     >
                       Mật khẩu
                     </label>
                     <div className="relative">
                       <input
-                      className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                      className="peer block w-full rounded-lg border border-gray-300 py-3 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                       id="password"
                       type="password"
                       name="password"
@@ -151,7 +160,7 @@ const Login = () => {
                         <input
                         id="remember"
                         type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-colors duration-200"
                         />
                         <label
                         htmlFor="remember"
@@ -166,7 +175,7 @@ const Login = () => {
                 <div className="mt-6 flex items-center justify-center">
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-40"
+                    className="w-full flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl"
                   >
                     Đăng nhập
                   </button>
@@ -178,10 +187,11 @@ const Login = () => {
                     <a href="/register" className={" text-blue-600 underline"}>Đăng ký</a>
                   </span>
                   </p>
+                        </div>
+                    </form>
+                    </div>
                 </div>
-              </div>
-            </form>
-          </div>
+            </div>
         </div>
     );
 };
