@@ -52,7 +52,16 @@ const FeatureItem = ({
 
 export default function IntroducePage() {
   return (
-    <section className="py-16 bg-gradient-to-r from-white via-sky-100 to-orange-50">
+    <section className="bg-gradient-to-r from-white via-sky-100 to-orange-50 pb-16">
+      <div className="flex justify-center mb-8">
+        <Image
+          src="/images/intro-img.jpg"
+          alt="Hình ảnh giới thiệu trung tâm thú cưng"
+          width={1600}
+          height={3300}
+          className="object-cover"
+        />
+      </div>
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-orange-500 mb-2">
           GIỚI THIỆU
