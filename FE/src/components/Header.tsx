@@ -42,7 +42,11 @@ export default function Header() {
   return (
     <header className="flex justify-between items-center py-4 px-6 bg-white shadow-sm w-full fixed top-0 left-0 p-4 z-50">
       <div className="flex-1">
-        <Link href="/" className="text-xl font-bold">Logo</Link>
+        <Link href="/" className="text-xl font-bold flex items-center gap-2">
+          {/* Logo can be replaced with an actual image or SVG */}
+          <img src="/images/logo.jpg" alt="Logo" className="h-10" />
+          <span className="text-orange-500">Pet House</span>
+        </Link>
       </div>
       
       <nav className="flex-2">
