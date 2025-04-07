@@ -25,7 +25,8 @@ export default function Header() {
   const publicNavItems = [
     { label: "Trang chủ", href: "/" },
     { label: "Giới thiệu", href: "/introdution" },
-    { label: "Sự kiện", href: "/eventevent" },
+    { label: "Dịch vụ", href: "/service" },
+    { label: "Sự kiện", href: "/event" },
   ];
 
   const privateNavItems = [
