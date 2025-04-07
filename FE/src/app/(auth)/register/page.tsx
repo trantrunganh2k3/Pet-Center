@@ -7,7 +7,8 @@ import axios from "axios";
 import { registerAPI } from "@/app/APIRoute";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
-import { UserOutlined, KeyOutlined } from "@ant-design/icons";
+import { UserOutlined, KeyOutlined, HomeOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 const Register = () => {
 
@@ -23,7 +24,7 @@ const Register = () => {
         });
     const router = useRouter();
 
-    const handleNewCustomerChange = (e) => {
+    const handleNewCustomerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       setNewCustomer({
           ...newCustomer,
@@ -79,33 +80,39 @@ const Register = () => {
   };
 
     return (
-        <div className="flex flex-col md:flex-row h-screen items-center justify-center bg-blue-300 overflow-auto py-8">
-            <div className="hidden md:flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
-                <img 
+<div className="flex min-h-screen items-center justify-center bg-blue-300 p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl flex flex-col md:flex-row overflow-hidden">
+                <div className="md:w-1/2 p-2">
+                    <img 
+                       src="/images/pet-login.jpg"
                        width={1000}
                        height={760}
-                       className="hidden md:block"
-                       alt="Screenshots of the register page"
-                />
-            </div>
-            <div className="w-full max-w-md md:w-2/5 lg:w-1/3 px-4 md:px-0">
-              <div className="bg-white rounded-lg shadow-lg p-6 overflow-y-auto max-h-[90vh]">
-                <form className="space-y-3 w-full" onSubmit={handleSubmit}>
-                  <div className="rounded-lg bg-gray-50 px-4 md:px-6 pb-4 pt-6">
-                    <h1 className="mb-3 text-xl md:text-2xl font-medium">
+                       className="w-full h-full object-cover rounded-lg"
+                       alt="Pet registration"
+                    />
+                </div>
+                <div className="md:w-1/2 p-8 flex flex-col">
+                    <div className="flex justify-end mb-4">
+                        <Link href="/" className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors duration-200">
+                            <HomeOutlined />
+                            <span>Quay về trang chủ</span>
+                        </Link>
+                    </div>
+                    <form className="space-y-4 w-full" onSubmit={handleSubmit}>
+                    <h1 className="mb-6 text-2xl font-semibold text-gray-900">
                       Chào mừng đến với ứng dụng.
                     </h1>
                     <div className="w-full space-y-3">
                       <div>
                         <label
-                          className="mb-1 block text-xs font-medium text-gray-900"
+                          className="mb-2 block text-sm font-medium text-gray-900"
                           htmlFor="username"
                         >
                           Username
                         </label>
                         <div className="relative">
                           <input
-                            className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                          className="peer block w-full rounded-lg border border-gray-300 py-3 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                             id="username"
                             type="text"
                             name="username"
@@ -119,14 +126,14 @@ const Register = () => {
                       </div>
                       <div>
                         <label
-                          className="mb-1 block text-xs font-medium text-gray-900"
+                          className="mb-2 block text-sm font-medium text-gray-900"
                           htmlFor="password"
                         >
                           Mật khẩu
                         </label>
                         <div className="relative">
                           <input
-                          className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                          className="peer block w-full rounded-lg border border-gray-300 py-3 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                           id="password"
                           type="password"
                           name="password"
@@ -140,14 +147,14 @@ const Register = () => {
                       </div>
                       <div>
                         <label
-                          className="mb-1 block text-xs font-medium text-gray-900"
+                          className="mb-2 block text-sm font-medium text-gray-900"
                           htmlFor="name"
                         >
                           Tên của bạn
                         </label>
                         <div className="relative">
                           <input
-                          className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                          className="peer block w-full rounded-lg border border-gray-300 py-3 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                           id="name"
                           type="text"
                           name="name"
@@ -161,14 +168,14 @@ const Register = () => {
                       </div>
                       <div>
                         <label
-                          className="mb-1 block text-xs font-medium text-gray-900"
+                          className="mb-2 block text-sm font-medium text-gray-900"
                           htmlFor="phone"
                         >
                           Số điện thoại
                         </label>
                         <div className="relative">
                           <input
-                          className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                          className="peer block w-full rounded-lg border border-gray-300 py-3 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                           id="phone"
                           type="text"
                           name="phone"
@@ -182,14 +189,14 @@ const Register = () => {
                       </div>
                       <div>
                         <label
-                          className="mb-1 block text-xs font-medium text-gray-900"
+                          className="mb-2 block text-sm font-medium text-gray-900"
                           htmlFor="email"
                         >
                           Địa chỉ email
                         </label>
                         <div className="relative">
                           <input
-                          className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                          className="peer block w-full rounded-lg border border-gray-300 py-3 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                           id="email"
                           type="email"
                           name="email"
@@ -203,14 +210,14 @@ const Register = () => {
                       </div>
                       <div>
                         <label
-                          className="mb-1 block text-xs font-medium text-gray-900"
+                          className="mb-2 block text-sm font-medium text-gray-900"
                           htmlFor="address"
                         >
                           Địa chỉ
                         </label>
                         <div className="relative">
                           <input
-                          className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                          className="peer block w-full rounded-lg border border-gray-300 py-3 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                           id="address"
                           type="text"
                           name="address"
@@ -224,14 +231,14 @@ const Register = () => {
                       </div>
                       <div>
                         <label
-                          className="mb-1 block text-xs font-medium text-gray-900"
+                          className="mb-2 block text-sm font-medium text-gray-900"
                           htmlFor="dob"
                         >
                           Ngày sinh
                         </label>
                         <div className="relative">
                           <input
-                          className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                          className="peer block w-full rounded-lg border border-gray-300 py-3 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                           id="dob"
                           type="date"
                           name="dob"
@@ -248,22 +255,21 @@ const Register = () => {
                     <div className="mt-6 flex items-center justify-center">
                       <button
                         type="submit"
-                        className="inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-40"
+                        className="w-full flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl"
                       >
                         Đăng ký
                       </button>
                     </div>
 
-                    <div className="mt-4 text-center">
+                    <div className="text-center">
                       <p>{"Bạn đã có tài khoản?  "}
                       <span>
                         <a href="/login" className="text-blue-600 underline">Đăng nhập</a>
                       </span>
                       </p>
                     </div>
-                  </div>
-                </form>
-              </div>
+                    </form>
+                </div>
             </div>
         </div>
     );
