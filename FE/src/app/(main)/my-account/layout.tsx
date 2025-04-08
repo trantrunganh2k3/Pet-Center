@@ -34,9 +34,9 @@ export default function AccountLayout({
     },
     { 
       label: "Thú cưng của tôi", 
-      href: "/my-account/my-pets",
+      href: "/my-account/my-pet",
       // Đường dẫn /tai-khoan/thu-cung và bất kỳ đường dẫn con của nó
-      active: pathname.startsWith("/my-account/my-pets") 
+      active: pathname.startsWith("/my-account/my-pet") 
     },
     { 
       label: "Lịch sử dịch vụ", 

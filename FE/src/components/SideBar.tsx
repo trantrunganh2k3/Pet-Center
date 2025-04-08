@@ -24,7 +24,8 @@ export default function Header() {
   
   const navItems = [
     { label: "Tài khoản", href: "/my-account" },
-    { label: "Thú cưng của tôi", href: "/booking" },
+    { label: "Thú cưng của tôi", href: "/my-pet" },
+    { label: "Lịch sử đặt lịch", href: "/history" },
   ];
 
   return (
