@@ -6,3 +6,4 @@ export const getCustomerAPI = 'http://localhost:8080/petcenter/customers/myInfo'
 export const customerAPI = 'http://localhost:8080/petcenter/customers';
 export const petAPI = 'http://localhost:8080/petcenter/pets';
 export const staffAPI = 'http://localhost:8080/petcenter/staffs';
+export const serviceCategoryAPI = 'http://localhost:8080/petcenter/service_category';

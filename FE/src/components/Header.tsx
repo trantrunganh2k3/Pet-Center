@@ -30,7 +30,7 @@ export default function Header() {
   ];
 
   const privateNavItems = [
-    { label: "Đặt lịch", href: "/booking" },
+    { label: "Đặt lịch", href: "/shedule" },
     { label: "Tài khoản", href: "/my-account" },
   ];
 

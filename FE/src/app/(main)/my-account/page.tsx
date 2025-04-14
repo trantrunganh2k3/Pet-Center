@@ -40,6 +40,9 @@ export default function AccountPage() {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
+            validateStatus: function (status) {
+              return true; // Always return response instead of exception
+            },
           },
         );
 

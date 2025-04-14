@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function EventPage() {
   return (
-    <section className="bg-gradient-to-r from-white via-sky-100 to-orange-50 pb-16">
+    <section className="bg-gradient-to-r from-white via-sky-100 to-orange-50 pb-16, py-16">
       <div className="flex justify-center mb-8">
         <Image
           src="/images/intro-img.jpg"

@@ -26,7 +26,7 @@ export default function AdminHeader() {
     { label: "Thống kê", href: "/admin" },
     { label: "Quản lý khách hàng", href: "/admin/cus-manage" },
     { label: "Quản lý thú cưng", href: "/admin/pet-manage" },
-    { label: "Quản lý dịch vụ", href: "/admin/service-manage" },
+    { label: "Quản lý dịch vụ", href: "/admin/schedule-manage" },
     { label: "Quản lý nhân viên", href: "/admin/staff-manage" },
   ];
 
