@@ -40,7 +40,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="flex justify-between items-center py-4 px-6 bg-white shadow-sm w-full fixed top-0 left-0 p-4 z-50">
+    <header className="flex justify-between items-center py-4 px-6 bg-white shadow-sm w-full fixed top-0 left-0 z-50 h-[72px]">
       <div className="flex-1">
         <Link href="/" className="text-xl font-bold flex items-center gap-2">
           {/* Logo can be replaced with an actual image or SVG */}

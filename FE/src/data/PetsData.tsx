@@ -1,15 +1,46 @@
 import { useState, useEffect } from 'react';
-import axios, { create } from 'axios';
+import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import { petAPI } from '../app/APIRoute';
+import { Pet } from '../types/interfaces';
 
-// Services (các hàm gọi API)
-const petAPTService = {
-    async create(data, id) {
-        const response = await axios.post(
-            `${petAPI}/${id}`,
-            data
+interface ServerResponse<T = any> {
+  code: number;
+  message: string;
+  result: T;
+}
+
+type ApiError = {
+  response?: {
+    data: ServerResponse;
+    status: number;
+    statusText: string;
+  };
+  message: string;
+};
+
+interface PetFormData {
+  name: string;
+  species: string;
+  age: number;
+  weight: number;
+  gender: 'MALE' | 'FEMALE';
+  color: string;
+  customerId?: string;
+}
+
+// API services
+const petAPIService = {
+    async create(data: PetFormData, customerId: string): Promise<Pet> {
+        const response = await axios.post<ServerResponse<Pet>>(
+            `${petAPI}/${customerId}`,
+            data,
+            {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('accessToken')}`,
+                },
+            }
         );
         if (response.data && response.data.code !== 1000) {
             throw new Error(response.data.message || 'Lỗi khi thêm thú cưng');
@@ -17,8 +48,8 @@ const petAPTService = {
           return response.data.result;
     },
 
-    async getAll() {
-        const response = await axios.get(
+    async getAll(): Promise<Pet[]> {
+        const response = await axios.get<ServerResponse<Pet[]>>(
           petAPI, {
             headers: {
               Authorization: `Bearer ${Cookies.get('accessToken')}`,
@@ -31,8 +62,8 @@ const petAPTService = {
         return response.data.result;
     },
 
-    async update(id, data) {
-        const response = await axios.put(
+    async update(id: string, data: Partial<PetFormData>): Promise<Pet> {
+        const response = await axios.put<ServerResponse<Pet>>(
           `${petAPI}/${id}`,
           data, {
             headers: {
@@ -46,8 +77,8 @@ const petAPTService = {
         return response.data.result;
     },
 
-    async delete(id) {
-        const response = await axios.delete(
+    async delete(id: string): Promise<void> {
+        const response = await axios.delete<ServerResponse<void>>(
           `${petAPI}/${id}`, {
             headers: {
               Authorization: `Bearer ${Cookies.get('accessToken')}`,
@@ -61,18 +92,18 @@ const petAPTService = {
       }
 }
 
-// Custom hook sử dụng services ở trên
-export function useCustomers() {
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+// Custom hook for managing pets
+export function usePets() {
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchPets = async () => {
     try {
       setLoading(true);
       setError(null); // Reset error trước khi fetch
-      const data = await petAPTService.getAll();
-      setCustomers(data);
+      const data = await petAPIService.getAll();
+      setPets(data);
     } catch (err) {
       handleError(err);
     } finally {
@@ -81,24 +112,19 @@ export function useCustomers() {
   };
 
   // Hàm xử lý lỗi chung
-  const handleError = (err) => {
-    if (err.response && err.response.data) {
-      // Lỗi từ API response
-      setError(err.response.data.message || 'Có lỗi xảy ra từ server');
-      toast.error(err.response.data.message || 'Có lỗi xảy ra từ server');
-    } else {
-      // Lỗi khác (network, timeout...)
-      setError(err.message || 'Có lỗi xảy ra');
-      toast.error(err.message || 'Có lỗi xảy ra');
-    }
+  const handleError = (error: unknown) => {
+    const err = error as ApiError;
+    const errorMessage = err.response?.data?.message || err.message || 'Có lỗi xảy ra';
+    setError(errorMessage);
+    toast.error(errorMessage);
     console.error('API Error:', err);
   };
 
-  const updatePet = async (id, data) => {
+  const updatePet = async (id: string, data: Partial<PetFormData>) => {
     try {
       setLoading(true);
       setError(null); // Reset error
-      await petAPTService.update(id, data);
+      await petAPIService.update(id, data);
       await fetchPets(); // Refresh sau khi cập nhật
       toast.success('Cập nhật thông tin thành công!');
       return true;
@@ -110,11 +136,11 @@ export function useCustomers() {
     }
   };
 
-  const deletePet = async (id) => {
+  const deletePet = async (id: string) => {
     try {
       setLoading(true);
       setError(null); // Reset error
-      await petAPTService.delete(id);
+      await petAPIService.delete(id);
       await fetchPets(); // Refresh sau khi xóa
       toast.success('Xóa thông tin thành công!');
       return true;
@@ -126,13 +152,13 @@ export function useCustomers() {
     }
   };
 
-  const createPet = async (data, id) => {
+  const createPet = async (data: PetFormData, customerId: string) => {
     try {
       setLoading(true);
       setError(null); // Reset error
-      await petAPTService.create(data, id);
+      await petAPIService.create(data, customerId);
       await fetchPets(); // Refresh sau khi tạo mới
-      toast.success('Tạo khách hàng mới thành công!');
+      toast.success('Tạo thú cưng mới thành công!');
       return true;
     } catch (err) {
       handleError(err);
@@ -148,7 +174,7 @@ export function useCustomers() {
   }, []);
 
   return {
-    customers,
+    pets,
     loading,
     error,
     fetchPets,

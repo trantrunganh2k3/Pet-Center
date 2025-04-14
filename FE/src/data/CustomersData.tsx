@@ -3,69 +3,88 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import { customerAPI as customersAPI } from '../app/APIRoute';
+import { Customer, CustomerFormData, APIResponse, ValidationError } from '../types/interfaces';
+import { validateEmail, validatePhone } from '../utils/validationSchemas';
 
-// Services (các hàm gọi API)
+interface ServerResponse<T = any> {
+  code: number;
+  message: string;
+  result: T;
+}
+
+type ApiError = {
+  response?: {
+    data: ServerResponse;
+    status: number;
+    statusText: string;
+  };
+  message: string;
+};
+
+// Services for API calls
 const customerAPIService = {
-  async create(data) {
-    const response = await axios.post(
+  async create(data: CustomerFormData): Promise<Customer> {
+    const response = await axios.post<ServerResponse<Customer>>(
       `http://localhost:8080/petcenter/users/register`,
-      data,
+      data
     );
-    if (response.data && response.data.code !== 1000) {
+    if (response.data.code !== 1000) {
       throw new Error(response.data.message || 'Lỗi khi tạo khách hàng');
     }
     return response.data.result;
   },
 
-  async getAll() {
-    const response = await axios.get(
-      customersAPI, {
+  async getAll(): Promise<Customer[]> {
+    const response = await axios.get<ServerResponse<Customer[]>>(
+      customersAPI, 
+      {
         headers: {
           Authorization: `Bearer ${Cookies.get('accessToken')}`,
         },
-      },
+      }
     );
-    if (response.data && response.data.code !== 1000) {
+    if (response.data.code !== 1000) {
       throw new Error(response.data.message || 'Lỗi khi lấy danh sách khách hàng');
     }
     return response.data.result;
   },
 
-  async update(id, data) {
-    const response = await axios.put(
+  async update(id: string, data: Partial<CustomerFormData>): Promise<Customer> {
+    const response = await axios.put<ServerResponse<Customer>>(
       `${customersAPI}/${id}`,
-      data, {
+      data,
+      {
         headers: {
           Authorization: `Bearer ${Cookies.get('accessToken')}`,
         },
-      },
+      }
     );
-    if (response.data && response.data.code !== 1000) {
+    if (response.data.code !== 1000) {
       throw new Error(response.data.message || 'Lỗi khi cập nhật thông tin');
     }
     return response.data.result;
   },
 
-  async delete(id) {
-    const response = await axios.delete(
-      `${customersAPI}/${id}`, {
+  async delete(id: string): Promise<void> {
+    const response = await axios.delete<ServerResponse<void>>(
+      `${customersAPI}/${id}`,
+      {
         headers: {
           Authorization: `Bearer ${Cookies.get('accessToken')}`,
         },
-      },
+      }
     );
-    if (response.data && response.data.code !== 1000) {
+    if (response.data.code !== 1000) {
       throw new Error(response.data.message || 'Lỗi khi xóa khách hàng');
     }
-    return response.data.result;
   }
 };
 
-// Custom hook sử dụng services ở trên
+// Custom hook for managing customers
 export function useCustomers() {
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchCustomers = async () => {
     try {
@@ -80,21 +99,16 @@ export function useCustomers() {
     }
   };
 
-  // Hàm xử lý lỗi chung
-  const handleError = (err) => {
-    if (err.response && err.response.data) {
-      // Lỗi từ API response
-      setError(err.response.data.message || 'Có lỗi xảy ra từ server');
-      toast.error(err.response.data.message || 'Có lỗi xảy ra từ server');
-    } else {
-      // Lỗi khác (network, timeout...)
-      setError(err.message || 'Có lỗi xảy ra');
-      toast.error(err.message || 'Có lỗi xảy ra');
-    }
+  // Common error handler
+  const handleError = (error: unknown) => {
+    const err = error as ApiError;
+    const errorMessage = err.response?.data?.message || err.message || 'Có lỗi xảy ra';
+    setError(errorMessage);
+    toast.error(errorMessage);
     console.error('API Error:', err);
   };
 
-  const updateCustomer = async (id, data) => {
+  const updateCustomer = async (id: string, data: Partial<CustomerFormData>) => {
     try {
       setLoading(true);
       setError(null); // Reset error
@@ -110,7 +124,7 @@ export function useCustomers() {
     }
   };
 
-  const deleteCustomer = async (id) => {
+  const deleteCustomer = async (id: string) => {
     try {
       setLoading(true);
       setError(null); // Reset error
@@ -126,7 +140,20 @@ export function useCustomers() {
     }
   };
 
-  const createCustomer = async (data) => {
+  const createCustomer = async (data: CustomerFormData) => {
+    // Validate email and phone before creating
+    const isEmailValid = await validateEmail(data.email);
+    const isPhoneValid = await validatePhone(data.phone);
+
+    if (!isEmailValid) {
+      toast.error('Email không hợp lệ');
+      return false;
+    }
+
+    if (!isPhoneValid) {
+      toast.error('Số điện thoại không hợp lệ');
+      return false;
+    }
     try {
       setLoading(true);
       setError(null); // Reset error
