@@ -11,7 +11,12 @@ import org.mapstruct.MappingTarget;
 public interface ServiceCategoryMapper {
 
     ServiceCategoryResponse toServiceCategoryResponse(ServiceCategory serviceCategory);
+
+    @Mapping(target = "cateId", ignore = true)
+    @Mapping(target = "services", ignore = true)
     ServiceCategory toServiceCategory(ServiceCategoryRequest request);
 
+    @Mapping(target = "cateId", ignore = true)
+    @Mapping(target = "services", ignore = true)
     void updateServiceCategory(ServiceCategoryRequest request, @MappingTarget ServiceCategory serviceCategory);
 }

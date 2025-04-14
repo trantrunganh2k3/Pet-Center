@@ -16,10 +16,12 @@ public interface CustomerMapper {
 
     @Mapping(target = "customerId", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "pets", ignore = true)
     Customer toCustomer(CustomerRequest customerRequest);
 
     @Mapping(target = "customerId", ignore = true)
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "pets", ignore = true)
     void updateCustomer(@MappingTarget Customer customer, CustomerRequest customerRequest);
 
     CustomerResponse toCustomerResponse(Customer customer);

@@ -11,9 +11,11 @@ import org.mapstruct.MappingTarget;
 public interface PetMapper {
 
     @Mapping(target = "customer", ignore = true)
+    @Mapping(target = "petId", ignore = true)
     Pet toPet(PetRequest petRequest);
 
     @Mapping(target = "customer", ignore = true)
+    @Mapping(target = "petId", ignore = true)
     void updatePet(@MappingTarget Pet pet, PetRequest petRequest);
 
     PetResponse toPetResponse(Pet pet);
