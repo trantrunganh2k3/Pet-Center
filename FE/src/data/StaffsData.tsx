@@ -3,69 +3,87 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import { staffAPI } from '../app/APIRoute';
+import { Staff, StaffFormData, APIResponse } from '../types/interfaces';
 
-// Services (các hàm gọi API)
+interface ServerResponse<T = any> {
+  code: number;
+  message: string;
+  result: T;
+}
+
+type ApiError = {
+  response?: {
+    data: ServerResponse;
+    status: number;
+    statusText: string;
+  };
+  message: string;
+};
+
+// API services
 const staffAPIService = {
-  async create(data) {
-    const response = await axios.post(
+  async create(data: StaffFormData): Promise<Staff> {
+    const response = await axios.post<ServerResponse<Staff>>(
       `http://localhost:8080/petcenter/users/staff-register`,
-      data,
+      data
     );
-    if (response.data && response.data.code !== 1000) {
-      throw new Error(response.data.message || 'Lỗi khi tạo khách hàng');
+    if (response.data.code !== 1000) {
+      throw new Error(response.data.message || 'Lỗi khi tạo nhân viên');
     }
     return response.data.result;
   },
 
-  async getAll() {
-    const response = await axios.get(
-      staffAPI, {
+  async getAll(): Promise<Staff[]> {
+    const response = await axios.get<ServerResponse<Staff[]>>(
+      staffAPI,
+      {
         headers: {
           Authorization: `Bearer ${Cookies.get('accessToken')}`,
         },
-      },
+      }
     );
-    if (response.data && response.data.code !== 1000) {
-      throw new Error(response.data.message || 'Lỗi khi lấy danh sách khách hàng');
+    if (response.data.code !== 1000) {
+      throw new Error(response.data.message || 'Lỗi khi lấy danh sách nhân viên');
     }
     return response.data.result;
   },
 
-  async update(id, data) {
-    const response = await axios.put(
+  async update(id: string, data: Partial<StaffFormData>): Promise<Staff> {
+    const response = await axios.put<ServerResponse<Staff>>(
       `${staffAPI}/${id}`,
-      data, {
+      data,
+      {
         headers: {
           Authorization: `Bearer ${Cookies.get('accessToken')}`,
         },
-      },
+      }
     );
-    if (response.data && response.data.code !== 1000) {
+    if (response.data.code !== 1000) {
       throw new Error(response.data.message || 'Lỗi khi cập nhật thông tin');
     }
     return response.data.result;
   },
 
-  async delete(id) {
-    const response = await axios.delete(
-      `${staffAPI}/${id}`, {
+  async delete(id: string): Promise<void> {
+    const response = await axios.delete<ServerResponse<void>>(
+      `${staffAPI}/${id}`,
+      {
         headers: {
           Authorization: `Bearer ${Cookies.get('accessToken')}`,
         },
-      },
+      }
     );
-    if (response.data && response.data.code !== 1000) {
-      throw new Error(response.data.message || 'Lỗi khi xóa khách hàng');
+    if (response.data.code !== 1000) {
+      throw new Error(response.data.message || 'Lỗi khi xóa nhân viên');
     }
-    return response.data.result;
   }
 };
 
 // Custom hook sử dụng services ở trên
 export function useStaffs() {
-  const [staffs, setStaffs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [staffs, setStaffs] = useState<Staff[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchStaffs = async () => {
     try {
@@ -81,20 +99,15 @@ export function useStaffs() {
   };
 
   // Hàm xử lý lỗi chung
-  const handleError = (err) => {
-    if (err.response && err.response.data) {
-      // Lỗi từ API response
-      setError(err.response.data.message || 'Có lỗi xảy ra từ server');
-      toast.error(err.response.data.message || 'Có lỗi xảy ra từ server');
-    } else {
-      // Lỗi khác (network, timeout...)
-      setError(err.message || 'Có lỗi xảy ra');
-      toast.error(err.message || 'Có lỗi xảy ra');
-    }
+  const handleError = (error: unknown) => {
+    const err = error as ApiError;
+    const errorMessage = err.response?.data?.message || err.message || 'Có lỗi xảy ra';
+    setError(errorMessage);
+    toast.error(errorMessage);
     console.error('API Error:', err);
   };
 
-  const updateStaff = async (id, data) => {
+  const updateStaff = async (id: string, data: Partial<StaffFormData>) => {
     try {
       setLoading(true);
       setError(null); // Reset error
@@ -110,7 +123,7 @@ export function useStaffs() {
     }
   };
 
-  const deleteStaff = async (id) => {
+  const deleteStaff = async (id: string) => {
     try {
       setLoading(true);
       setError(null); // Reset error
@@ -126,7 +139,7 @@ export function useStaffs() {
     }
   };
 
-  const createStaff = async (data) => {
+  const createStaff = async (data: StaffFormData) => {
     try {
       setLoading(true);
       setError(null); // Reset error

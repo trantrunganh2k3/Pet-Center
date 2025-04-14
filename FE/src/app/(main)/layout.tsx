@@ -11,7 +11,7 @@ export default function DashboardLayout({
       {/* Header UI */}
       <Header />
       {/* Main content với padding-top */}
-      <main className="flex-1 pt-16">
+      <main className="flex-1 pt-[72px]">
         {children}
       </main>
     </div>

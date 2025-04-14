@@ -1,18 +1,25 @@
 'use client';
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { useStaffs } from "@/data/StaffsData";
+import { Staff, StaffFormData } from '@/types/interfaces';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
+import StaffScheduleModal from '@/components/StaffScheduleModal';
 
 const Staffs = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedStaff, setSelectedStaff] = useState(null);
+    const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
     const [crOpen, setCrOpen] = useState(false);
-    const [formData, setFormData] = useState({
+    const [searchTerm, setSearchTerm] = useState('');
+    const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+    const [formData, setFormData] = useState<Partial<StaffFormData>>({
         name: '',
         email: '',
         phone: '',
         address: '',
     });
-    const [newStaff, setNewStaff] = useState({
+    const [newStaff, setNewStaff] = useState<StaffFormData>({
         username: '',
         password: '',
         role: 'STAFF',
@@ -32,7 +39,10 @@ const Staffs = () => {
         createStaff,
     } = useStaffs();
 
-    const handleEdit = (staff) => {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [staffToDelete, setStaffToDelete] = useState<string | null>(null);
+
+    const handleEdit = (staff: Staff) => {
         setSelectedStaff(staff);
         setFormData({
             name: staff.name,
@@ -43,7 +53,7 @@ const Staffs = () => {
         setIsOpen(true);
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
@@ -51,7 +61,7 @@ const Staffs = () => {
         });
     };
 
-    const handleNewStaffChange = (e) => {
+    const handleNewStaffChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setNewStaff({
             ...newStaff,
@@ -59,51 +69,72 @@ const Staffs = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        updateStaff(selectedStaff.staffId, formData);
-
-        setIsOpen(false);
-    };
-
-    const handleCreateSubmit = (e) => {
-        e.preventDefault();
-        createStaff(newStaff);
-        setCrOpen(false);
-        // Reset form
-        setNewStaff({
-            username: '',
-            password: '',
-            role: 'STAFF',
-            name: '',
-            email: '',
-            phone: '',
-            address: '',
-        });
-    };
-
-    const confirmDelete = (id) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa nhân viên này?")) {
-            deleteStaff(id);
+        if (selectedStaff) {
+            const success = await updateStaff(selectedStaff.staffId, formData);
+            if (success) {
+                setIsOpen(false);
+            }
         }
     };
 
-    const formatDate = (dateString) => {
+    const handleCreateSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const success = await createStaff(newStaff);
+        if (success) {
+            setCrOpen(false);
+            setNewStaff({
+                username: '',
+                password: '',
+                role: 'STAFF',
+                name: '',
+                email: '',
+                phone: '',
+                address: '',
+            });
+        }
+    };
+
+    const handleDeleteClick = (id: string) => {
+        setStaffToDelete(id);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (staffToDelete) {
+            await deleteStaff(staffToDelete);
+            setDeleteDialogOpen(false);
+            setStaffToDelete(null);
+        }
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteDialogOpen(false);
+        setStaffToDelete(null);
+    };
+
+    const handleViewSchedule = (staff: Staff) => {
+        setSelectedStaff(staff);
+        setScheduleModalOpen(true);
+    };
+
+    const filteredStaffs = staffs.filter(staff => 
+        staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        staff.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        staff.phone.includes(searchTerm)
+    );
+
+    const formatDate = (dateString: string) => {
         if (!dateString) return "";
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN');
     };
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-            </div>
-        );
-    }
 
     return (
-        <div className="container mx-auto mt-8 px-4">
+        <ErrorBoundary>
+            <div className="container mx-auto mt-8 px-4">
             {error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
                     <strong className="font-bold">Lỗi! </strong>
@@ -112,8 +143,31 @@ const Staffs = () => {
             )}
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div className="p-6 bg-gray-50 border-b border-gray-200">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-2xl font-bold text-gray-800">Danh sách nhân viên</h2>
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-3 md:space-y-0">
+                    <h2 className="text-2xl font-bold text-gray-800">Danh sách nhân viên</h2>
+                    <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm..."
+                                className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <svg
+                                className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                        </div>
                         <button 
                             onClick={() => setCrOpen(true)}
                             className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out flex items-center"
@@ -124,6 +178,7 @@ const Staffs = () => {
                             Thêm nhân viên
                         </button>
                     </div>
+                </div>
                 </div>
                 
                 <div className="overflow-x-auto">
@@ -148,8 +203,14 @@ const Staffs = () => {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {staffs.length > 0 ? (
-                                staffs.map((staff, index) => (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={6}>
+                                        <LoadingSkeleton rows={5} />
+                                    </td>
+                                </tr>
+                            ) : filteredStaffs.length > 0 ? (
+                                filteredStaffs.map((staff, index) => (
                                     <tr key={staff.staffId} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
@@ -173,18 +234,26 @@ const Staffs = () => {
                                             <div className="text-sm text-gray-900 truncate max-w-xs">{staff.address}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button 
-                                                onClick={() => handleEdit(staff)}
-                                                className="text-blue-600 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 rounded-md px-3 py-1 mr-2 transition duration-150 ease-in-out"
-                                            >
-                                                Sửa
-                                            </button>
-                                            <button 
-                                                onClick={() => confirmDelete(staff.staffId)}
-                                                className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 rounded-md px-3 py-1 transition duration-150 ease-in-out"
-                                            >
-                                                Xóa
-                                            </button>
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    onClick={() => handleViewSchedule(staff)}
+                                                    className="text-green-600 hover:text-green-900 bg-green-100 hover:bg-green-200 rounded-md px-3 py-1 transition duration-150 ease-in-out"
+                                                >
+                                                    Lịch làm việc
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleEdit(staff)}
+                                                    className="text-blue-600 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 rounded-md px-3 py-1 transition duration-150 ease-in-out"
+                                                >
+                                                    Sửa
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDeleteClick(staff.staffId)}
+                                                    className="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 rounded-md px-3 py-1 transition duration-150 ease-in-out"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -199,13 +268,34 @@ const Staffs = () => {
                     </table>
                 </div>
                 
-                {staffs.length > 0 && (
-                    <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                        <div className="text-sm text-gray-700">
-                            Hiển thị <span className="font-medium">{staffs.length}</span> nhân viên
-                        </div>
+            {filteredStaffs.length > 0 && (
+                <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div className="text-sm text-gray-700">
+                        Hiển thị <span className="font-medium">{filteredStaffs.length}</span> nhân viên
+                        {searchTerm && <span> (đã lọc từ {staffs.length} nhân viên)</span>}
                     </div>
-                )}
+                </div>
+            )}
+
+            <ConfirmationDialog
+                isOpen={deleteDialogOpen}
+                title="Xác nhận xóa"
+                message="Bạn có chắc chắn muốn xóa nhân viên này?"
+                confirmLabel="Xóa"
+                onConfirm={handleDeleteConfirm}
+                onCancel={handleDeleteCancel}
+            />
+            
+            {selectedStaff && (
+                <StaffScheduleModal
+                    isOpen={scheduleModalOpen}
+                    onClose={() => {
+                        setScheduleModalOpen(false);
+                        setSelectedStaff(null);
+                    }}
+                    staff={selectedStaff}
+                />
+            )}
             </div>
             
             {/* Edit Modal */}
@@ -394,6 +484,7 @@ const Staffs = () => {
                 </div>
             )}
         </div>
+        </ErrorBoundary>
     );
 }
 
