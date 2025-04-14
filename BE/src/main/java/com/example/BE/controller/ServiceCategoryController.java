@@ -1,16 +1,8 @@
 package com.example.BE.controller;
 
 import com.example.BE.dto.request.ApiResponse;
-import com.example.BE.dto.request.PetRequest;
 import com.example.BE.dto.request.ServiceCategoryRequest;
-import com.example.BE.dto.response.PetResponse;
 import com.example.BE.dto.response.ServiceCategoryResponse;
-import com.example.BE.dto.response.ServiceResponse;
-import com.example.BE.repository.CustomerRepository;
-import com.example.BE.repository.PetRepository;
-import com.example.BE.repository.ServiceCategoryRepository;
-import com.example.BE.service.CustomerService;
-import com.example.BE.service.PetService;
 import com.example.BE.service.ServiceCategoryService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -28,13 +20,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ServiceCategoryController {
 
-    PetRepository petRepository;
-    PetService petService;
-
-    CustomerService customerService;
-    CustomerRepository customerRepository;
-
-    ServiceCategoryRepository serviceCategoryRepository;
     ServiceCategoryService serviceCategoryService;
 
     @PostMapping
@@ -50,6 +35,19 @@ public class ServiceCategoryController {
         return ApiResponse.<List<ServiceCategoryResponse>>builder()
                 .result(serviceCategoryService.getAll())
                 .build();
+    }
+
+    @PutMapping("/{id}")
+    ApiResponse<ServiceCategoryResponse> updateServiceCategory(@PathVariable String id, @RequestBody @Valid ServiceCategoryRequest request) {
+        return ApiResponse.<ServiceCategoryResponse>builder()
+                .result(serviceCategoryService.update(request, id))
+                .build();
+    }
+
+    @DeleteMapping("/{id}")
+    String deleteServiceCategory(@PathVariable String id) {
+        serviceCategoryService.delete(id);
+        return "Service category deleted";
     }
 
 }

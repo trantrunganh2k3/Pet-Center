@@ -20,7 +20,8 @@ public class Services {
 
     String name;
     String description;
-    int base_price;
+    int min_price;
+    int max_price;
     int duration;
 
     // Mối quan hệ Many-to-One với Customer

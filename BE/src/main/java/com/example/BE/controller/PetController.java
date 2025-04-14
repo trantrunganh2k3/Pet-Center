@@ -1,13 +1,8 @@
 package com.example.BE.controller;
 
 import com.example.BE.dto.request.ApiResponse;
-import com.example.BE.dto.request.CustomerRequest;
 import com.example.BE.dto.request.PetRequest;
-import com.example.BE.dto.response.CustomerResponse;
 import com.example.BE.dto.response.PetResponse;
-import com.example.BE.repository.CustomerRepository;
-import com.example.BE.repository.PetRepository;
-import com.example.BE.service.CustomerService;
 import com.example.BE.service.PetService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -25,11 +20,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PetController {
 
-    PetRepository petRepository;
     PetService petService;
-
-    CustomerService customerService;
-    CustomerRepository customerRepository;
 
     @PostMapping("/{customerID}")
     ApiResponse<PetResponse> createPet(@PathVariable String customerID, @RequestBody @Valid PetRequest petRequest) {

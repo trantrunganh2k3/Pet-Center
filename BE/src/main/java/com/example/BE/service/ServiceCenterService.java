@@ -53,4 +53,8 @@ public class ServiceCenterService {
         return serviceMapper.toServiceResponse(serviceRepository.save(service));
     }
 
+    public void deleteService(String id) {
+        serviceRepository.deleteById(id);
+    }
+
 }

@@ -47,5 +47,8 @@ public class ServiceCategoryService {
         return serviceCategoryMapper.toServiceCategoryResponse(serviceCategoryRepository.save(serviceCategory));
     }
 
+    public void delete(String id) {
+        serviceCategoryRepository.deleteById(id);
+    }
 
 }

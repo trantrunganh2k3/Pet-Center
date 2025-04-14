@@ -12,7 +12,8 @@ public class ServiceResponse {
 
     String serviceId;
     String name;
-    int base_price;
+    int min_price;
+    int max_price;
     int duration;
     String description;
 }

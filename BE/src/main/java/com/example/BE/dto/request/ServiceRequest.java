@@ -11,7 +11,8 @@ import lombok.experimental.FieldDefaults;
 public class ServiceRequest {
 
     String name;
-    int base_price;
+    int min_price;
+    int max_price;
     int duration;
     String description;
 }
