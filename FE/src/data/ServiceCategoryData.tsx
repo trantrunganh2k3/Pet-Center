@@ -4,7 +4,6 @@ import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 import { serviceCategoryAPI } from '../app/APIRoute';
 import { ServiceCategory } from '../types/interfaces';
-import { set } from 'react-hook-form';
 
 interface ServerResponse<T = any> {
   code: number;
@@ -60,13 +59,14 @@ const serviceCategoryAPIService = {
     return response.data.result;
   },
 
-  async update(id: string, data: Partial<ServiceCategoryFormData>): Promise<ServiceCategory> {
+  async update(id: string, data: { name: string; description: string }): Promise<ServiceCategory> {
     const response = await axios.put<ServerResponse<ServiceCategory>>(
       `${serviceCategoryAPI}/${id}`,
       data,
       {
         headers: {
           Authorization: `Bearer ${Cookies.get('accessToken')}`,
+          'Content-Type': 'application/json'
         },
       }
     );
@@ -74,7 +74,6 @@ const serviceCategoryAPIService = {
       throw new Error(response.data.message || 'Error updating service category');
     }
     return response.data.result;
-
   },
 
   async delete(id: string): Promise<void> {
@@ -93,13 +92,12 @@ const serviceCategoryAPIService = {
 }
 
 // Custom hook to manage service categories
-
-export function useServiceCategory () {
+export function useServiceCategory() {
   const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fecthServiceCategories = async () => {
+  const fetchServiceCategories = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -120,12 +118,12 @@ export function useServiceCategory () {
     console.error('API Error:', err);
   };
 
-  const updateServiceCategory = async (id: string, data: Partial<ServiceCategoryFormData>) => {
+  const updateServiceCategory = async (id: string, data: { name: string; description: string }) => {
     try {
       setLoading(true);
-      setError(null); // Reset error
-      await serviceCategoryAPIService.update(id, data);
-      await fecthServiceCategories(); // Fetch updated list
+      setError(null);
+      const result = await serviceCategoryAPIService.update(id, data);
+      await fetchServiceCategories();
       toast.success('Cập nhật danh mục dịch vụ thành công!');
       return true;
     } catch (err) {
@@ -138,9 +136,9 @@ export function useServiceCategory () {
   const deleteServiceCategory = async (id: string) => {
     try {
       setLoading(true);
-      setError(null); // Reset error
+      setError(null);
       await serviceCategoryAPIService.delete(id);
-      await fecthServiceCategories(); // Fetch updated list
+      await fetchServiceCategories();
       toast.success('Xóa danh mục dịch vụ thành công!');
       return true;
     } catch (err) {
@@ -153,9 +151,9 @@ export function useServiceCategory () {
   const createServiceCategory = async (data: ServiceCategoryFormData) => {
     try {
       setLoading(true);
-      setError(null); // Reset error
+      setError(null);
       await serviceCategoryAPIService.create(data);
-      await fecthServiceCategories(); // Fetch updated list
+      await fetchServiceCategories();
       toast.success('Tạo danh mục dịch vụ thành công!');
       return true;
     } catch (err) {
@@ -166,14 +164,14 @@ export function useServiceCategory () {
   };
 
   useEffect(() => {
-    fecthServiceCategories();
+    fetchServiceCategories();
   }, []);
 
   return {
     serviceCategories,
     loading,
     error,
-    fecthServiceCategories,
+    fetchServiceCategories,
     createServiceCategory,
     updateServiceCategory,
     deleteServiceCategory,

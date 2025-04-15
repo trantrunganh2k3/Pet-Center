@@ -43,7 +43,8 @@ const ServiceManagePage = () => {
     // Category handlers
     const handleCategorySelect = (category: ServiceCategory) => {
         setSelectedCategory(category);
-        fetchServices(category.id);
+
+        fetchServices(category.cateId); // Fetch services for the selected category
     };
 
     const handleAddCategory = async (data: { name: string; description: string }) => {
@@ -53,9 +54,14 @@ const ServiceManagePage = () => {
         }
     };
 
-    const handleEditCategory = async (data: { name: string; description: string }) => {
-        if (categoryToEdit) {
-            const success = await updateServiceCategory(categoryToEdit.id, data);
+    const handleEditCategory = async (data: { id?: string; name: string; description: string }) => {
+        
+        if (data.id) {
+            const updateData = {
+                name: data.name,
+                description: data.description
+            };
+            const success = await updateServiceCategory(data.id, updateData);
             if (success) {
                 setIsEditingCategory(false);
                 setCategoryToEdit(null);
@@ -68,7 +74,7 @@ const ServiceManagePage = () => {
             const success = await deleteServiceCategory(categoryToDelete);
             if (success) {
                 setCategoryToDelete(null);
-                if (selectedCategory?.id === categoryToDelete) {
+                if (selectedCategory?.cateId === categoryToDelete) {
                     setSelectedCategory(null);
                 }
             }
@@ -78,7 +84,7 @@ const ServiceManagePage = () => {
     // Service handlers
     const handleAddService = async (data: any) => {
         if (selectedCategory) {
-            const success = await createService(selectedCategory.id, data);
+            const success = await createService(selectedCategory.cateId, data);
             if (success) {
                 setIsAddingService(false);
             }
@@ -87,7 +93,7 @@ const ServiceManagePage = () => {
 
     const handleEditService = async (data: any) => {
         if (serviceToEdit && selectedCategory) {
-            const success = await updateService(selectedCategory.id, serviceToEdit.id, data);
+            const success = await updateService(selectedCategory.cateId, serviceToEdit.serviceId, data);
             if (success) {
                 setIsEditingService(false);
                 setServiceToEdit(null);
@@ -97,7 +103,7 @@ const ServiceManagePage = () => {
 
     const handleDeleteService = async () => {
         if (serviceToDelete && selectedCategory) {
-            const success = await deleteService(selectedCategory.id, serviceToDelete);
+            const success = await deleteService(selectedCategory.cateId, serviceToDelete);
             if (success) {
                 setServiceToDelete(null);
             }
@@ -130,19 +136,21 @@ const ServiceManagePage = () => {
                 ) : (
                     /* Categories Grid */
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {serviceCategories.map((category) => (
-                        <ServiceCategoryCard
-                            key={category.id}
-                            category={category}
-                            selected={selectedCategory?.id === category.id}
-                            onSelect={handleCategorySelect}
-                            onEdit={(category) => {
-                                setCategoryToEdit(category);
-                                setIsEditingCategory(true);
-                            }}
-                            onDelete={(id) => setCategoryToDelete(id)}
-                        />
-                    ))}
+                        {serviceCategories.map((category) => {
+                            return (
+                                <ServiceCategoryCard
+                                    key={category.cateId}
+                                    category={category}
+                                    selected={selectedCategory?.cateId === category.cateId}
+                                    onSelect={handleCategorySelect}
+                                    onEdit={(cat) => {
+                                        setCategoryToEdit(cat);
+                                        setIsEditingCategory(true);
+                                    }}
+                                    onDelete={(id) => setCategoryToDelete(id)}
+                                />
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -188,69 +196,69 @@ const ServiceManagePage = () => {
                             </div>
                         ) : (
                             <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Tên dịch vụ
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Mô tả
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Thời gian (phút)
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Giá (VND)
-                                    </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Thao tác
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {services.map((service) => (
-                                    <tr key={service.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-gray-900">
-                                                {service.name}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-900 line-clamp-2">
-                                                {service.description}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">
-                                                {service.duration}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">
-                                                {service.min_price.toLocaleString()} - {service.max_price.toLocaleString()}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button
-                                                onClick={() => {
-                                                    setServiceToEdit(service);
-                                                    setIsEditingService(true);
-                                                }}
-                                                className="text-blue-600 hover:text-blue-900 mr-4"
-                                            >
-                                                Sửa
-                                            </button>
-                                            <button
-                                                onClick={() => setServiceToDelete(service.id)}
-                                                className="text-red-600 hover:text-red-900"
-                                            >
-                                                Xóa
-                                            </button>
-                                        </td>
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Tên dịch vụ
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Mô tả
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Thời gian (phút)
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Giá (VND)
+                                        </th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Thao tác
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {services.map((service) => (
+                                        <tr key={service.serviceId}>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm font-medium text-gray-900">
+                                                    {service.name}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm text-gray-900 line-clamp-2">
+                                                    {service.description}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-900">
+                                                    {service.duration}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-900">
+                                                    {service.min_price.toLocaleString()} - {service.max_price.toLocaleString()}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button
+                                                    onClick={() => {
+                                                        setServiceToEdit(service);
+                                                        setIsEditingService(true);
+                                                    }}
+                                                    className="text-blue-600 hover:text-blue-900 mr-4"
+                                                >
+                                                    Sửa
+                                                </button>
+                                                <button
+                                                    onClick={() => setServiceToDelete(service.serviceId)}
+                                                    className="text-red-600 hover:text-red-900"
+                                                >
+                                                    Xóa
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         )}
                     </div>
                 </div>
@@ -278,7 +286,7 @@ const ServiceManagePage = () => {
                 isOpen={isAddingService}
                 onClose={() => setIsAddingService(false)}
                 onSubmit={handleAddService}
-                categoryId={selectedCategory?.id || ''}
+                categoryId={selectedCategory?.cateId || ''}
             />
 
             <ServiceForm
@@ -289,7 +297,7 @@ const ServiceManagePage = () => {
                 }}
                 onSubmit={handleEditService}
                 initialData={serviceToEdit || undefined}
-                categoryId={selectedCategory?.id || ''}
+                categoryId={selectedCategory?.cateId || ''}
                 title="Chỉnh sửa dịch vụ"
             />
 

@@ -47,7 +47,7 @@ const ServiceCategoryCard: React.FC<ServiceCategoryCardProps> = ({
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            onDelete(category.id);
+                            onDelete(category.cateId);
                         }}
                         className="p-1 text-red-600 hover:text-red-800 transition-colors"
                         title="Xóa danh mục"

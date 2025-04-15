@@ -96,13 +96,13 @@ export interface Shift {
 }
 
 export interface ServiceCategory {
-  id: string;
+  cateId: string;
   name: string;
   description: string;
 }
 
 export interface Service {
-  id: string;
+  serviceId: string;
   name: string;
   description: string;
   duration: number; // in minutes

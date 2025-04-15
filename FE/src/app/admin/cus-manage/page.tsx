@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from "react";
 import { useCustomers } from '../../../data/CustomersData';
+import { usePets } from '../../../data/PetsData';
 import { Customer, CustomerFormData, Pet } from '../../../types/interfaces';
 import LoadingSkeleton from '../../../components/LoadingSkeleton';
 import ErrorBoundary from '../../../components/ErrorBoundary';
@@ -129,12 +130,19 @@ const Customers = () => {
         pets: Pet[];
     } | null>(null);
 
-    const handleViewPets = (customer: Customer) => {
+    const { fetchCustomerPets } = usePets();
+
+    const handleViewPets = async (customer: Customer) => {
         setSelectedCustomerPets({
             name: customer.name,
-            pets: customer.pets || []
+            pets: []
         });
         setPetsModalOpen(true);
+        const pets = await fetchCustomerPets(customer.customerId);
+        setSelectedCustomerPets(prev => ({
+            name: customer.name,
+            pets: pets
+        }));
     };
 
     const formatDate = (dateString: string) => {
@@ -257,7 +265,7 @@ const Customers = () => {
                                                         onClick={() => handleViewPets(customer)}
                                                         className="text-green-600 hover:text-green-900 bg-green-100 hover:bg-green-200 rounded-md px-3 py-1 transition duration-150 ease-in-out"
                                                     >
-                                                        Thú cưng ({customer.pets?.length || 0})
+                                                        Thú cưng
                                                     </button>
                                                     <button 
                                                         onClick={() => handleEdit(customer)}

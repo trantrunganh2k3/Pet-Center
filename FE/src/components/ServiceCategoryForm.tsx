@@ -4,7 +4,7 @@ import { ServiceCategory } from '@/types/interfaces';
 interface ServiceCategoryFormProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: { name: string; description: string }) => void;
+    onSubmit: (data: { id?: string; name: string; description: string }) => void;
     initialData?: ServiceCategory;
     title?: string;
 }
@@ -16,28 +16,39 @@ const ServiceCategoryForm: React.FC<ServiceCategoryFormProps> = ({
     initialData,
     title = 'Thêm danh mục dịch vụ',
 }) => {
-    const [formData, setFormData] = React.useState({
+    const [formData, setFormData] = React.useState<{
+        id?: string;
+        name: string;
+        description: string;
+    }>({
         name: '',
         description: '',
     });
 
     useEffect(() => {
         if (initialData) {
-            setFormData({
+            const newFormData = {
+                id: initialData.cateId,
                 name: initialData.name,
                 description: initialData.description,
-            });
+            };
+            setFormData(newFormData);
         } else {
             setFormData({
                 name: '',
                 description: '',
             });
         }
-    }, [initialData, isOpen]);
+    }, [initialData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(formData);
+        const submitData = {
+            ...(initialData?.cateId ? { id: initialData.cateId } : {}),
+            name: formData.name,
+            description: formData.description,
+        };
+        onSubmit(submitData);
     };
 
     if (!isOpen) return null;
