@@ -46,7 +46,7 @@ public class PetController {
                 .build();
     }
 
-    @GetMapping("/{customerID}")
+    @GetMapping("/customer/{customerID}")
     ApiResponse<List<PetResponse>> getPetsEachCus(@PathVariable("customerID") String customerID) {
 
         return ApiResponse.<List<PetResponse>>builder()
@@ -63,8 +63,10 @@ public class PetController {
     }
 
     @DeleteMapping("/{petID}")
-    String deletePet(@PathVariable("petID") String petID) {
+    ApiResponse<String> deletePet(@PathVariable("petID") String petID) {
         petService.deletePet(petID);
-        return "Pet deleted";
+        return ApiResponse.<String>builder()
+                .result("Pet has been deleted")
+                .build();
     }
 }

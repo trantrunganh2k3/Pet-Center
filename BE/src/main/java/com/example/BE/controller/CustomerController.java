@@ -70,8 +70,10 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{userID}")
-    String deleteUser(@PathVariable("userID") String userID) {
+    ApiResponse<String> deleteUser(@PathVariable("userID") String userID) {
         customerService.deleteCustomer(userID);
-        return "User deleted";
+        return ApiResponse.<String>builder()
+                .result("Customer has been deleted")
+                .build();
     }
 }

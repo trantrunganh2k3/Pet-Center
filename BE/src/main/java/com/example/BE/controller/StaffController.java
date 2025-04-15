@@ -68,8 +68,10 @@ public class StaffController {
     }
 
     @DeleteMapping("/{userID}")
-    String deleteStaff(@PathVariable("userID") String userID) {
+    ApiResponse<String> deleteStaff(@PathVariable("userID") String userID) {
         staffService.deleteStaff(userID);
-        return "User deleted";
+        return ApiResponse.<String>builder()
+                .result("Staff has been deleted")
+                .build();
     }
 }
