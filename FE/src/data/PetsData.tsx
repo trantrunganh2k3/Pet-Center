@@ -62,6 +62,20 @@ const petAPIService = {
         return response.data.result;
     },
 
+    async getByCustomerId(customerId: string): Promise<Pet[]> {
+        const response = await axios.get<ServerResponse<Pet[]>>(
+          `${petAPI}/customer/${customerId}`, {
+            headers: {
+              Authorization: `Bearer ${Cookies.get('accessToken')}`,
+            },
+          },
+        );
+        if (response.data && response.data.code !== 1000) {
+          throw new Error(response.data.message || 'Lỗi khi lấy danh sách thú cưng');
+        }
+        return response.data.result;
+    },
+
     async update(id: string, data: Partial<PetFormData>): Promise<Pet> {
         const response = await axios.put<ServerResponse<Pet>>(
           `${petAPI}/${id}`,
@@ -173,6 +187,20 @@ export function usePets() {
     fetchPets();
   }, []);
 
+  const fetchCustomerPets = async (customerId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await petAPIService.getByCustomerId(customerId);
+      return data;
+    } catch (err) {
+      handleError(err);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     pets,
     loading,
@@ -181,5 +209,6 @@ export function usePets() {
     updatePet,
     deletePet,
     createPet,
+    fetchCustomerPets,
   };
 }
