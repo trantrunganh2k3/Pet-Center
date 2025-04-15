@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
-
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "booking")
@@ -29,5 +28,11 @@ public class Booking {
     }
 
     String note;
-    Date createdDate;
+    LocalDate createdDate;
+    LocalDate updatedDate;
+
+    // Mối quan hệ Many-to-One với Customer
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    Customer customer;
 }

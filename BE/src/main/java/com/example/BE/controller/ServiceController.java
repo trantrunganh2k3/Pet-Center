@@ -47,9 +47,11 @@ public class ServiceController {
     }
 
     @DeleteMapping("/{id}")
-    String deleteServiceCategory(@PathVariable String id) {
+    ApiResponse<String> deleteServiceCategory(@PathVariable String id) {
         serviceCenterService.deleteService(id);
-        return "Service deleted";
+        return ApiResponse.<String>builder()
+                .result("Service has been deleted")
+                .build();
     }
 
 }
