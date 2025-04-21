@@ -1,63 +1,39 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { serviceCategoryAPI } from '@/app/APIRoute';
-import axios from 'axios';
-import { APIResponse, ServiceCategory, Pet, SubService } from './types';
+import { useState } from 'react';
+import { ServiceCategory, Pet, SubService, Schedule } from './types';
 import StepIndicator from '@/app/(main)/shedule/components/StepIndicator';
 import ServiceCategorySelection from '@/app/(main)/shedule/components/ServiceCategorySelection';
 import PetAndSubServiceSelection from '@/app/(main)/shedule/components/PetAndSubServiceSelection';
 import DateTimeSelection from '@/app/(main)/shedule/components/DateTimeSelection';
 import ScheduleConfirmation from '@/app/(main)/shedule/components/ScheduleConfirmation';
+import { useServiceCategory } from '@/data/ServiceCategoryData';
+import { useCustomerPets } from './hooks/useCustomerPets';
+import { useSubServices } from './hooks/useSubServices';
 import Cookies from 'js-cookie';
-
-// Mock data cho thú cưng (sẽ được thay thế bằng API call)
-const mockPets = [
-  { id: 1, name: 'Lucky', type: 'Chó', breed: 'Corgi', image: '/images/dog.jpg' },
-  { id: 2, name: 'Milo', type: 'Mèo', breed: 'Scottish Fold', image: '/images/cute-dog.jpg' },
-];
 
 export default function SchedulePage() {
   // State management
   const [currentStep, setCurrentStep] = useState(1);
-  const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const [selectedCategory, setSelectedCategory] = useState<ServiceCategory | null>(null);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [selectedSubServices, setSelectedSubServices] = useState<SubService[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
-  // Fetch service categories
-  useEffect(() => {
-    const fetchServiceCategories = async () => {
-      try {
-        const response = await axios.get<APIResponse<ServiceCategory[]>>(
-          serviceCategoryAPI,
-          {
-            headers: {
-              'Authorization': `Bearer ${Cookies.get('accessToken')}`,
-            },
-            validateStatus: function (status) {
-              return true; // Always return response instead of exception
-            },
-          },);
-        if (response.data.code === 1000) {
-          setServiceCategories(response.data.result);
-        } else {
-          setError('Không thể tải danh sách dịch vụ');
-        }
-      } catch (err) {
-        setError('Đã xảy ra lỗi khi tải dữ liệu');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const customerId: string = Cookies.get('customerId') || ''; // Lấy customerId từ cookie (hoặc auth context)
 
-    fetchServiceCategories();
-  }, []);
+  // Custom hooks
+  const { serviceCategories, loading: loadingCategories, error: errorCategories } = useServiceCategory();
+  const { pets, loading: loadingPets, createPet } = useCustomerPets();
+  
+  const handleAddPet = async (petData: Omit<Pet, 'petId'>) => {
+    const newPet = await createPet(petData);
+    if (newPet) {
+      setSelectedPet(newPet); // Tự động chọn pet mới thêm
+    }
+  };
+  const { subServices, loading: loadingServices } = useSubServices(selectedCategory?.cateId || null);
 
   // Handlers
   const handleNext = () => {
@@ -74,14 +50,17 @@ export default function SchedulePage() {
   };
 
   const handleScheduleSubmit = () => {
+    const scheduleData: Schedule = {
+      customerId: customerId, // Sẽ lấy từ context hoặc auth state
+      petId: selectedPet!.petId,
+      subServiceIds: selectedSubServices.map(service => service.serviceId),
+      date: selectedDate!,
+      time: selectedTime!,
+      createdAt: new Date()
+    };
+    
     // Sẽ được implement sau
-    console.log('Schedule submitted:', {
-      category: selectedCategory,
-      pet: selectedPet,
-      subServices: selectedSubServices,
-      date: selectedDate,
-      time: selectedTime,
-    });
+    console.log('Schedule submitted:', scheduleData);
   };
 
   // Kiểm tra điều kiện để hiển thị bước cuối
@@ -94,8 +73,8 @@ export default function SchedulePage() {
         return (
           <ServiceCategorySelection
             categories={serviceCategories}
-            loading={loading}
-            error={error}
+            loading={loadingCategories}
+            error={errorCategories}
             onSelect={handleCategorySelect}
           />
         );
@@ -109,7 +88,8 @@ export default function SchedulePage() {
         }
         return (
           <PetAndSubServiceSelection
-            pets={mockPets}
+            pets={pets}
+            subServices={subServices}
             selectedCategory={selectedCategory}
             onPetSelect={setSelectedPet}
             onSubServicesSelect={setSelectedSubServices}
@@ -117,6 +97,8 @@ export default function SchedulePage() {
             selectedSubServices={selectedSubServices}
             onNext={handleNext}
             onBack={handleBack}
+            loading={loadingPets || loadingServices}
+            onAddPet={handleAddPet}
           />
         );
       }

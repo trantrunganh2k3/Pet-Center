@@ -25,7 +25,7 @@ const ScheduleConfirmation: React.FC<ScheduleConfirmationProps> = ({
     return `${days[date.getDay()]}, ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   };
 
-  const totalPrice = subServices.reduce((sum, service) => sum + service.price, 0);
+  const totalPrice = subServices.reduce((sum, service) => 0, 0);
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -69,10 +69,10 @@ const ScheduleConfirmation: React.FC<ScheduleConfirmationProps> = ({
             <h3 className="text-lg font-medium text-gray-800 mb-3">Chi tiết dịch vụ</h3>
             <div className="space-y-2">
               {subServices.map((service) => (
-                <div key={service.id} className="flex justify-between">
+                <div key={service.serviceId} className="flex justify-between">
                   <span className="text-gray-600">{service.name}</span>
                   <span className="text-gray-800 font-medium">
-                    {service.price.toLocaleString()}đ
+                    {service.min_price.toLocaleString()} - {service.max_price.toLocaleString()}đ
                   </span>
                 </div>
               ))}
