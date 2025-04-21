@@ -4,23 +4,24 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.sql.Time;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+
 
 @Entity
-@Table(name = "booking")
+@Table(name = "booking_detail")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Booking {
+public class BookingDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String bookingId;
+    String bookingDetailsId;
 
     enum Status {
         Pending,
@@ -30,16 +31,18 @@ public class Booking {
     }
 
     String note;
-    LocalDate createdDate;
-    LocalDate updatedDate;
+    LocalDate selectedDate;
+    Time selectedTime;
 
-    // Mối quan hệ Many-to-One với Customer
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerId", nullable = false)
-    Customer customer;
+    @JoinColumn(name = "bookingId", nullable = false)
+    Booking booking;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    List<BookingDetails> bookingDetails = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "petId", nullable = false)
+    Pet pet;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "serviceId", nullable = false)
+    Services service;
 }

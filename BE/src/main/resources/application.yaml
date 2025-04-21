@@ -21,5 +21,11 @@ jwt:
   valid-duration: 3600 #in second
   refreshable-duration: 360000 #in second
 
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    com.example.BE: DEBUG
+
 
 
