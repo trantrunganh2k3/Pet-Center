@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Pet, ServiceCategory, SubService } from '../types';
+import QuickAddPetModal from './QuickAddPetModal';
 
 interface PetAndSubServiceSelectionProps {
   pets: Pet[];
+  subServices: SubService[];
   selectedCategory: ServiceCategory | null;
   selectedPet: Pet | null;
   selectedSubServices: SubService[];
@@ -10,35 +12,13 @@ interface PetAndSubServiceSelectionProps {
   onSubServicesSelect: (services: SubService[]) => void;
   onNext: () => void;
   onBack: () => void;
+  loading: boolean;
+  onAddPet: (petData: Omit<Pet, 'petId'>) => Promise<void>;
 }
-
-// Mock data cho dịch vụ con (sẽ được thay thế bằng API call sau)
-const mockSubServices: SubService[] = [
-  {
-    id: '1',
-    name: 'Tắm thường',
-    description: 'Dịch vụ tắm cơ bản cho thú cưng',
-    categoryId: '1',
-    price: 200000,
-  },
-  {
-    id: '2',
-    name: 'Tắm cao cấp',
-    description: 'Dịch vụ tắm cao cấp với sản phẩm đặc biệt',
-    categoryId: '1',
-    price: 350000,
-  },
-  {
-    id: '3',
-    name: 'Cắt tỉa lông',
-    description: 'Dịch vụ cắt tỉa lông theo yêu cầu',
-    categoryId: '1',
-    price: 250000,
-  },
-];
 
 const PetAndSubServiceSelection: React.FC<PetAndSubServiceSelectionProps> = ({
   pets,
+  subServices,
   selectedCategory,
   selectedPet,
   selectedSubServices,
@@ -46,8 +26,11 @@ const PetAndSubServiceSelection: React.FC<PetAndSubServiceSelectionProps> = ({
   onSubServicesSelect,
   onNext,
   onBack,
+  loading,
+  onAddPet,
 }) => {
   const [error, setError] = useState<string | null>(null);
+  const [showAddPetModal, setShowAddPetModal] = useState(false);
 
   const handleNext = () => {
     if (!selectedPet) {
@@ -63,12 +46,17 @@ const PetAndSubServiceSelection: React.FC<PetAndSubServiceSelectionProps> = ({
   };
 
   const handleSubServiceToggle = (service: SubService) => {
-    const isSelected = selectedSubServices.some(s => s.id === service.id);
+    const isSelected = selectedSubServices.some(s => s.serviceId === service.serviceId);
     if (isSelected) {
-      onSubServicesSelect(selectedSubServices.filter(s => s.id !== service.id));
+      onSubServicesSelect(selectedSubServices.filter(s => s.serviceId !== service.serviceId));
     } else {
       onSubServicesSelect([...selectedSubServices, service]);
     }
+  };
+
+  const handleAddPet = async (petData: Omit<Pet, 'petId'>) => {
+    await onAddPet(petData);
+    setShowAddPetModal(false);
   };
 
   return (
@@ -87,10 +75,10 @@ const PetAndSubServiceSelection: React.FC<PetAndSubServiceSelectionProps> = ({
             <div className="grid gap-4">
               {pets.map((pet) => (
                 <div
-                  key={pet.id}
+                  key={pet.petId}
                   onClick={() => onPetSelect(pet)}
                   className={`p-4 rounded-lg cursor-pointer transition duration-200
-                    ${selectedPet?.id === pet.id
+                    ${selectedPet?.petId === pet.petId
                       ? 'bg-blue-50 border-2 border-blue-500'
                       : 'bg-white border-2 border-gray-200 hover:border-blue-300'
                     }`}
@@ -110,6 +98,35 @@ const PetAndSubServiceSelection: React.FC<PetAndSubServiceSelectionProps> = ({
                   </div>
                 </div>
               ))}
+
+              {/* Nút thêm thú cưng mới */}
+              <button
+                onClick={() => setShowAddPetModal(true)}
+                className="p-4 rounded-lg border-2 border-dashed border-gray-300 
+                         hover:border-blue-500 hover:text-blue-500 transition-colors
+                         flex items-center justify-center space-x-2"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+                <span>{pets.length === 0 ? 'Thêm thú cưng đầu tiên' : 'Thêm thú cưng khác'}</span>
+              </button>
+
+              {pets.length === 0 && (
+                <p className="text-center text-gray-500 mt-2">
+                  Bạn chưa có thú cưng nào. Hãy thêm thú cưng để tiếp tục.
+                </p>
+              )}
             </div>
           </div>
 
@@ -117,12 +134,12 @@ const PetAndSubServiceSelection: React.FC<PetAndSubServiceSelectionProps> = ({
           <div>
             <h3 className="text-lg font-semibold mb-4">Chọn dịch vụ chi tiết</h3>
             <div className="grid gap-4">
-              {mockSubServices.map((service) => (
+              {subServices.map((service) => (
                 <div
-                  key={service.id}
+                  key={service.serviceId}
                   onClick={() => handleSubServiceToggle(service)}
                   className={`p-4 rounded-lg cursor-pointer transition duration-200
-                    ${selectedSubServices.some(s => s.id === service.id)
+                    ${selectedSubServices.some(s => s.serviceId === service.serviceId)
                       ? 'bg-blue-50 border-2 border-blue-500'
                       : 'bg-white border-2 border-gray-200 hover:border-blue-300'
                     }`}
@@ -135,11 +152,17 @@ const PetAndSubServiceSelection: React.FC<PetAndSubServiceSelectionProps> = ({
                       </p>
                     </div>
                     <p className="text-blue-600 font-medium">
-                      {service.price.toLocaleString()}đ
+                      {service.min_price.toLocaleString()} - {service.max_price.toLocaleString()}đ
                     </p>
                   </div>
                 </div>
               ))}
+
+              {subServices.length === 0 && (
+                <p className="text-center text-gray-500">
+                  Không có dịch vụ nào cho danh mục này
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -163,6 +186,13 @@ const PetAndSubServiceSelection: React.FC<PetAndSubServiceSelectionProps> = ({
           Tiếp tục
         </button>
       </div>
+
+      <QuickAddPetModal
+        isOpen={showAddPetModal}
+        onClose={() => setShowAddPetModal(false)}
+        onSubmit={handleAddPet}
+        loading={loading}
+      />
     </div>
   );
 };

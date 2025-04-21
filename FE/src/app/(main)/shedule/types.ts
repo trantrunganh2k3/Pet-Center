@@ -11,7 +11,7 @@ export interface ServiceCategory {
 }
 
 export interface Pet {
-  id: number;
+  petId: string;
   name: string;
   type: string;
   breed: string;
@@ -19,9 +19,20 @@ export interface Pet {
 }
 
 export interface SubService {
-  id: string;
+  serviceId: string;
   name: string;
   description: string;
   categoryId: string;
-  price: number;
+  min_price: number;
+  max_price: number;
+}
+
+export interface Schedule {
+  scheduleId?: string;
+  customerId: string;
+  petId: string;
+  subServiceIds: string[];
+  date: Date;
+  time: string;
+  createdAt: Date;
 }
