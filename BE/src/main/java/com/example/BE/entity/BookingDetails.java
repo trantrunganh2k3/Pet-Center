@@ -1,5 +1,6 @@
 package com.example.BE.entity;
 
+import com.example.BE.enums.BookingDetailsStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -23,14 +24,10 @@ public class BookingDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     String bookingDetailsId;
 
-    enum Status {
-        Pending,
-        Processing,
-        Completed,
-        Canceled
-    }
+    @Enumerated(EnumType.STRING)
+    BookingDetailsStatus status;
 
-    String note;
+    int priority;
     LocalDate selectedDate;
     Time selectedTime;
 
@@ -45,4 +42,8 @@ public class BookingDetails {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "serviceId", nullable = false)
     Services service;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staffId", nullable = true)
+    Staff staff;
 }

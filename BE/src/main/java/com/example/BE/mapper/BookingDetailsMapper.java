@@ -1,16 +1,33 @@
 package com.example.BE.mapper;
 
-import com.example.BE.dto.request.BookingRequest;
-import com.example.BE.dto.response.BookingDetailsResponse;
-import com.example.BE.dto.response.BookingResponse;
-import com.example.BE.entity.Booking;
-import com.example.BE.entity.BookingDetails;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import com.example.BE.dto.response.*;
+import com.example.BE.entity.*;
+import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL)
 public interface BookingDetailsMapper {
 
+    @Mapping(target = "pet", source = "pet")
+    @Mapping(target = "customer", source = "booking.customer")
+    @Mapping(target = "staff", source = "staff", qualifiedByName = "mapStaffInfoNullable")
+    @Mapping(target = "service", source = "service")
     BookingDetailsResponse toBookingDetailsResponse(BookingDetails bookingDetails);
+
+    // Sub mappings
+    @Mapping(source = "petId", target = "petId")
+    @Mapping(source = "name", target = "petName")
+    PetInfo toPetInfo(Pet pet);
+
+    @Mapping(source = "customerId", target = "customerId")
+    @Mapping(source = "name", target = "customerName")
+    CustomerInfo toCustomerInfo(Customer customer);
+
+    @Named("mapStaffInfoNullable")
+    @Mapping(source = "staffId", target = "staffId")
+    @Mapping(source = "name", target = "name")
+    StaffInfo toStaffInfo(Staff staff);
+
+    @Mapping(source = "serviceId", target = "serviceId")
+    @Mapping(source = "name", target = "serviceName")
+    ServiceInfo toServiceInfo(Services service);
 }

@@ -1,5 +1,6 @@
 package com.example.BE.dto.request;
 
+import com.example.BE.enums.BookingStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,13 +13,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingRequest {
 
-    enum Status {
-        Pending,
-        Processing,
-        Completed,
-        Canceled
-    }
-
+    BookingStatus status;
     String note;
     LocalDate createdDate;
     LocalDate updatedDate;

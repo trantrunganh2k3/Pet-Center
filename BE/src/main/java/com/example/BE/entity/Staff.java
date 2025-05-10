@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "staff")
 @Getter
@@ -28,5 +31,7 @@ public class Staff {
     String email;
     String address;
 
-
+    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    List<BookingDetails> bookingDetails = new ArrayList<>();
 }

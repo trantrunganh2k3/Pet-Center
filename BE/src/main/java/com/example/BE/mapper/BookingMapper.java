@@ -2,7 +2,9 @@ package com.example.BE.mapper;
 
 import com.example.BE.dto.request.BookingRequest;
 import com.example.BE.dto.response.BookingResponse;
+import com.example.BE.dto.response.CustomerInfo;
 import com.example.BE.entity.Booking;
+import com.example.BE.entity.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -18,6 +20,10 @@ public interface BookingMapper {
     @Mapping(target = "customer", ignore = true)
     void updateBooking(@MappingTarget Booking booking, BookingRequest bookingRequest);
 
+    @Mapping(target = "customer", source = "customer")
     BookingResponse toBookingResponse(Booking booking);
 
+    @Mapping(target = "customerId", source = "customerId")
+    @Mapping(target = "customerName", source = "name")
+    CustomerInfo toCustomerInfo(Customer customer);
 }

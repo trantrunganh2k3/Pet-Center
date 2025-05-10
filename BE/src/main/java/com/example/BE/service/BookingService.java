@@ -4,6 +4,8 @@ import com.example.BE.dto.request.*;
 import com.example.BE.dto.response.BookingResponse;
 import com.example.BE.dto.response.UserResponse;
 import com.example.BE.entity.*;
+import com.example.BE.enums.BookingDetailsStatus;
+import com.example.BE.enums.BookingStatus;
 import com.example.BE.exception.AppException;
 import com.example.BE.exception.ErrorCode;
 import com.example.BE.mapper.BookingMapper;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Service
@@ -46,9 +49,12 @@ public class BookingService {
         Booking booking = Booking.builder()
                 .customer(customer)
                 .createdDate(request.getCreatedDate())
+                .status(BookingStatus.Pending)
                 .build();
 
         bookingRepository.save(booking);
+
+        AtomicInteger counter = new AtomicInteger(1);
 
         List<BookingDetails> bookingDetailsList = foundServices.stream()
                 .map(services -> BookingDetails.builder()
@@ -57,6 +63,8 @@ public class BookingService {
                         .service(services)
                         .selectedDate(request.getSelectedDate())
                         .selectedTime(request.getSelectedTime())
+                        .priority(counter.getAndIncrement())
+                        .status(BookingDetailsStatus.Pending)
                         .build())
                 .toList();
 
@@ -69,6 +77,11 @@ public class BookingService {
     public List<BookingResponse> getBookingEachCus(String customerId) {
         return bookingRepository.findBookingByCustomerCustomerId(customerId)
                 .stream().map(bookingMapper::toBookingResponse).toList();
+    }
+
+    public BookingResponse getBooking(String bookingId) {
+        return bookingMapper.toBookingResponse(bookingRepository.findByBookingId(bookingId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND)));
     }
 
     public List<BookingResponse> getAllBookings() {
