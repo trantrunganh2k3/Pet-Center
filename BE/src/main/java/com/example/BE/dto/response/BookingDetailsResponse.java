@@ -1,8 +1,10 @@
 package com.example.BE.dto.response;
 
 import com.example.BE.entity.Booking;
+import com.example.BE.entity.Customer;
 import com.example.BE.entity.Pet;
 import com.example.BE.entity.Services;
+import com.example.BE.enums.BookingDetailsStatus;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -20,17 +22,15 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingDetailsResponse {
+
     String bookingDetailsId;
-
-    enum Status {
-        Pending,
-        Processing,
-        Completed,
-        Canceled
-    }
-
+    BookingDetailsStatus status;
     String note;
     LocalDate selectedDate;
     Time selectedTime;
 
+    PetInfo pet;
+    CustomerInfo customer;
+    StaffInfo staff;
+    ServiceInfo service;
 }

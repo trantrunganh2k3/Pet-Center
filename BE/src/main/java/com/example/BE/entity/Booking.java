@@ -1,5 +1,6 @@
 package com.example.BE.entity;
 
+import com.example.BE.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,12 +23,8 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.UUID)
     String bookingId;
 
-    enum Status {
-        Pending,
-        Processing,
-        Completed,
-        Canceled
-    }
+    @Enumerated(EnumType.STRING)
+    BookingStatus status;
 
     String note;
     LocalDate createdDate;

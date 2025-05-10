@@ -20,6 +20,8 @@ public enum ErrorCode {
     PET_NOT_FOUND(1011, "Pet not found", HttpStatus.NOT_FOUND),
     SERVICE_CATEGORY_NOT_FOUND(1012, "Services category not found", HttpStatus.NOT_FOUND),
     BOOKING_NOT_FOUND(1013, "Booking not found", HttpStatus.NOT_FOUND),
+    BOOKING_DETAIL_NOT_FOUND(1014, "Booking detail not found", HttpStatus.NOT_FOUND),
+    UPDATE_STATUS_DENY(1015, "You cannot update the status of this service", HttpStatus.BAD_REQUEST),
     UNCATEGORIZED(9999, "Uncategorized", HttpStatus.INTERNAL_SERVER_ERROR),
 
     ;

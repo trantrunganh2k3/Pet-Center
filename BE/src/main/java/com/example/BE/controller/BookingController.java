@@ -2,6 +2,7 @@ package com.example.BE.controller;
 
 import com.example.BE.dto.request.ApiResponse;
 import com.example.BE.dto.request.BookingOrderRequest;
+import com.example.BE.dto.request.BookingRequest;
 import com.example.BE.dto.response.BookingResponse;
 import com.example.BE.service.BookingService;
 import jakarta.validation.Valid;
@@ -38,11 +39,27 @@ public class BookingController {
                 .build();
     }
 
-    @GetMapping({"/userId"})
-    ApiResponse<List<BookingResponse>> getBookingsByUserId(@RequestParam("userId") String userId) {
+    @GetMapping("/info/{bookingId}")
+    ApiResponse<BookingResponse> getBooking(@PathVariable String bookingId) {
+
+        return ApiResponse.<BookingResponse>builder()
+                .result(bookingService.getBooking(bookingId))
+                .build();
+    }
+
+    @GetMapping("/{userId}")
+    ApiResponse<List<BookingResponse>> getBookingsByUserId(@PathVariable String userId) {
 
         return ApiResponse.<List<BookingResponse>>builder()
                 .result(bookingService.getBookingEachCus(userId))
+                .build();
+    }
+
+    @PutMapping("/{bookingId}")
+    ApiResponse<BookingResponse> updateBooking(@RequestBody @Valid BookingRequest bookingRequest, @PathVariable String bookingId) {
+
+        return ApiResponse.<BookingResponse>builder()
+                .result(bookingService.updateBooking(bookingId, bookingRequest))
                 .build();
     }
 

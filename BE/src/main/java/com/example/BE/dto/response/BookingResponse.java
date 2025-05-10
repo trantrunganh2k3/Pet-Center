@@ -1,5 +1,6 @@
 package com.example.BE.dto.response;
 
+import com.example.BE.enums.BookingStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,15 +16,9 @@ import java.time.LocalDate;
 public class BookingResponse {
 
     String bookingId;
-
-    enum Status {
-        Pending,
-        Processing,
-        Completed,
-        Canceled
-    }
-
+    BookingStatus status;
     String note;
     LocalDate createdDate;
     LocalDate updatedDate;
+    CustomerInfo customer;
 }
