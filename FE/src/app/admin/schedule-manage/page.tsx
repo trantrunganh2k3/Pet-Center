@@ -1,197 +1,186 @@
 "use client";
-import { useState } from "react";
-import { Table, Select, DatePicker, Input, Button, Space, Tag } from "antd";
-import type { ColumnsType } from "antd/lib/table";
-import { SearchOutlined, FilterOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
+import { Table, Select, DatePicker, Input, Button, Tag, message } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { SearchOutlined, FilterOutlined, LoadingOutlined } from "@ant-design/icons";
+import { bookingAPI } from "@/app/APIRoute";
+import { useRouter } from "next/navigation";
+import dayjs, { Dayjs } from 'dayjs';
+import 'dayjs/locale/vi';
+import {
+  Booking,
+  BookingStatus,
+  STATUS_OPTIONS,
+  getStatusColor,
+  getStatusText,
+} from "@/app/types/booking";
 
-interface Schedule {
-  id: string;
-  customerName: string;
-  petName: string;
-  service: string;
-  date: string;
-  time: string;
-  staff: string;
-  status: "pending" | "confirmed" | "completed" | "cancelled";
-}
+import Cookies from "js-cookie";
+import axios from "axios";
 
-export default function ScheduleManage() {
+dayjs.locale('vi');
+
+const ScheduleManagePage = () => {
   const [searchText, setSearchText] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<Schedule["status"][]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<BookingStatus[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const router = useRouter();
 
-  // Mock data - sẽ được thay thế bằng API call
-  const schedules: Schedule[] = [
-    {
-      id: "1",
-      customerName: "Nguyễn Văn A",
-      petName: "Mèo Mun",
-      service: "Tắm và vệ sinh",
-      date: "2024-04-08",
-      time: "09:00",
-      staff: "Nhân viên 1",
-      status: "pending",
-    },
-    {
-      id: "2",
-      customerName: "Trần Thị B",
-      petName: "Chó Bông",
-      service: "Cắt tỉa lông",
-      date: "2024-04-08",
-      time: "10:30",
-      staff: "Nhân viên 2",
-      status: "confirmed",
-    },
-  ];
+  useEffect(() => {
+    fetchBookings();
+  }, []);
 
-  const getStatusColor = (status: Schedule['status']) => {
-    switch (status) {
-      case "pending":
-        return "#faad14";  // gold-6
-      case "confirmed":
-        return "#1890ff";  // blue-6
-      case "completed":
-        return "#52c41a";  // green-6
-      case "cancelled":
-        return "#ff4d4f";  // red-5
-      default:
-        return "#d9d9d9";  // gray-5
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      interface BookingAPIResponse {
+        code: number;
+        message?: string;
+        result: Booking[];
+      }
+
+      const response = await axios.get<BookingAPIResponse>(bookingAPI, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${Cookies.get('accessToken')}`,
+        },
+      });
+
+      if (response.data.code !== 1000) {
+        throw new Error(response.data.message || 'Lỗi khi tải dữ liệu đặt lịch');
+      }
+      setBookings(response.data.result);
+    } catch (error) {
+      message.error('Lỗi khi tải dữ liệu đặt lịch');
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusText = (status: Schedule['status']) => {
-    switch (status) {
-      case "pending":
-        return "Chờ xác nhận";
-      case "confirmed":
-        return "Đã xác nhận";
-      case "completed":
-        return "Hoàn thành";
-      case "cancelled":
-        return "Đã hủy";
-      default:
-        return status;
-    }
+  const handleViewDetails = (bookingId: string) => {
+    router.push(`/admin/schedule-manage/details/${bookingId}`);
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(e.target.value);
-  };
-
-  // Sử dụng Select của Ant Design thay vì thẻ select thông thường
-  const handleStatusFilter = (values: Schedule["status"][]) => {
-    setSelectedStatus(values);
-  };
-
-  const handleDateChange = (dateString: string) => {
-    setSelectedDate(dateString);
-  };
-
-  const handleClearFilters = () => {
-    setSearchText("");
-    setSelectedStatus([]);
-    setSelectedDate(null);
-  };
-
-  // Filter data based on search and filters
-  const filteredData = schedules.filter((item) => {
-    const matchesSearch =
-      !searchText ||
-      Object.values(item).some(
-        (val) =>
-          val &&
-          val.toString().toLowerCase().includes(searchText.toLowerCase())
-      );
-    const matchesStatus =
-      selectedStatus.length === 0 || selectedStatus.includes(item.status);
-    const matchesDate =
-      !selectedDate ||
-      item.date === selectedDate;
+  const filteredData = bookings.filter((item) => {
+    const matchesSearch = !searchText || 
+      item.customer.customerName.toLowerCase().includes(searchText.toLowerCase());
+    const matchesStatus = selectedStatus.length === 0 || selectedStatus.includes(item.status);
+    const matchesDate = !selectedDate || item.createdDate.includes(selectedDate);
 
     return matchesSearch && matchesStatus && matchesDate;
   });
 
-  const tableColumns: ColumnsType<Schedule> = [
+  const handleUpdateStatus = async (bookingId: string, status: BookingStatus) => {
+    try {
+      setUpdatingStatus(bookingId);
+
+      // Tìm booking cần cập nhật
+      const bookingToUpdate = bookings.find(b => b.bookingId === bookingId);
+      if (!bookingToUpdate) {
+        throw new Error('Không tìm thấy booking');
+      }
+
+      // Tạo đối tượng chỉ chứa các trường cần thiết
+      const updatedBookingData = {
+        status,
+        note: bookingToUpdate.note,
+        createdDate: bookingToUpdate.createdDate,
+        updatedDate: new Date().toISOString() // Cập nhật ngày hiện tại
+      };
+
+      const response = await axios.put<{ code: number; message?: string }>(
+        `${bookingAPI}/${bookingId}`,
+        updatedBookingData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${Cookies.get('accessToken')}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.code !== 1000) {
+        throw new Error('Không thể cập nhật trạng thái');
+      }
+
+      message.success('Cập nhật trạng thái thành công');
+      await fetchBookings();
+    } catch (error) {
+      message.error('Lỗi khi cập nhật trạng thái');
+      console.error(error);
+    } finally {
+      setUpdatingStatus(null);
+    }
+  };
+
+  const columns: ColumnsType<Booking> = [
     {
       title: "Mã đặt lịch",
-      dataIndex: "id",
-      key: "id",
-      width: 120,
+      dataIndex: "bookingId",
+      key: "bookingId",
+      width: 100,
+      align: 'center',
     },
     {
       title: "Khách hàng",
-      dataIndex: "customerName",
+      dataIndex: ["customer", "fullName"],
       key: "customerName",
-      width: 150,
+      width: 200,
     },
     {
-      title: "Thú cưng",
-      dataIndex: "petName",
-      key: "petName",
+      title: "Ngày đặt",
+      dataIndex: "createdDate",
+      key: "createdDate",
       width: 120,
-    },
-    {
-      title: "Dịch vụ",
-      dataIndex: "service",
-      key: "service",
-      width: 150,
-    },
-    {
-      title: "Ngày",
-      dataIndex: "date",
-      key: "date",
-      width: 120,
-    },
-    {
-      title: "Giờ",
-      dataIndex: "time",
-      key: "time",
-      width: 100,
-    },
-    {
-      title: "Nhân viên",
-      dataIndex: "staff",
-      key: "staff",
-      width: 130,
+      align: 'center',
+      render: (date: string) => dayjs(date).format('DD/MM/YYYY')
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      width: 120,
-      render: (value: Schedule["status"]) => (
-        <Tag color={getStatusColor(value)}>
-          {getStatusText(value)}
-        </Tag>
-      ),
+      width: 180,
+      align: 'center',
+      render: (status: BookingStatus, record: Booking) => (
+        <div className="flex items-center justify-center gap-2">
+          <Select
+            value={status}
+            style={{ width: 140 }}
+            onChange={(value) => handleUpdateStatus(record.bookingId, value)}
+            disabled={updatingStatus === record.bookingId}
+            options={STATUS_OPTIONS.map(option => ({
+              value: option.value,
+              label: (
+                <Tag color={getStatusColor(option.value)}>
+                  {option.label}
+                </Tag>
+              )
+            }))}
+          />
+          {updatingStatus === record.bookingId && (
+            <LoadingOutlined style={{ fontSize: 18 }} />
+          )}
+        </div>
+      )
     },
     {
-      title: "Thao tác",
-      key: "action",
-      width: 200,
-      render: (_: unknown, record: Schedule) => (
-        <Space>
-          <Button type="primary" size="small">
-            Cập nhật
-          </Button>
-          <Button size="small">
-            Chi tiết
-          </Button>
-          {record.status === "pending" && (
-            <Button type="primary" danger size="small">
-              Hủy
-            </Button>
-          )}
-        </Space>
-      ),
-    },
-  ];
-
-  const filterOptions = [
-    { value: "pending", label: "Chờ xác nhận" },
-    { value: "confirmed", label: "Đã xác nhận" },
-    { value: "completed", label: "Hoàn thành" },
-    { value: "cancelled", label: "Đã hủy" },
+      title: "Chi tiết",
+      key: "detail",
+      width: 100,
+      render: (_: unknown, record: Booking) => (
+        <Button
+          type="link"
+          onClick={() => handleViewDetails(record.bookingId)}
+        >
+          Xem chi tiết
+        </Button>
+      )
+    }
   ];
 
   return (
@@ -199,35 +188,38 @@ export default function ScheduleManage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-4">Quản lý đặt lịch</h1>
         
-        {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-4">
           <Input
-            placeholder="Tìm kiếm..."
+            id="search"
+            placeholder="Tìm kiếm khách hàng..."
             value={searchText}
-            onChange={handleSearch}
+            onChange={(e) => setSearchText(e.target.value)}
             prefix={<SearchOutlined />}
             style={{ width: 250 }}
           />
           
-          {/* Sử dụng Select của Ant Design thay vì thẻ select HTML */}
           <Select
             mode="multiple"
             placeholder="Chọn trạng thái"
             value={selectedStatus}
-            onChange={handleStatusFilter}
+            onChange={setSelectedStatus}
             style={{ width: 250 }}
-            options={filterOptions}
-            optionFilterProp="label"
+            options={STATUS_OPTIONS}
           />
           
-          <DatePicker 
+          <DatePicker
             placeholder="Chọn ngày"
-            onChange={(date, dateString) => handleDateChange(dateString)}
+            format="DD/MM/YYYY"
+            onChange={(_: Dayjs | null, dateString: string) => setSelectedDate(dateString)}
             style={{ width: 150 }}
           />
 
           <Button 
-            onClick={handleClearFilters}
+            onClick={() => {
+              setSearchText("");
+              setSelectedStatus([]);
+              setSelectedDate(null);
+            }}
             icon={<FilterOutlined />}
           >
             Xóa bộ lọc
@@ -236,16 +228,19 @@ export default function ScheduleManage() {
       </div>
 
       <Table
-        columns={tableColumns as any}
+        loading={loading}
+        columns={columns}
         dataSource={filteredData}
-        rowKey={(record) => record.id}
-        scroll={{ x: 1200 }}
+        rowKey="bookingId"
+        scroll={{ x: 1000 }}
         pagination={{
           pageSize: 10,
           showSizeChanger: true,
-          showTotal: (total: number) => `Tổng số ${total} lịch hẹn`,
+          showTotal: (total: number) => `Tổng số ${total} đặt lịch`
         }}
       />
     </div>
   );
-}
+};
+
+export default ScheduleManagePage;

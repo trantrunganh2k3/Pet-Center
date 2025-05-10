@@ -10,6 +10,12 @@ export default function AdminHeader() {
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const role = Cookies.get("role"); // Lấy role từ cookie
+  console.log('Role in nav bar', role);
+  
+  const isAdmin = role === "ADMIN"; // Kiểm tra xem có phải admin không
+  console.log('isAdmin', isAdmin);
+
   useEffect(() => {
     const checkAuthStatus = () => {
       const token = Cookies.get("accessToken"); // Hoặc tên cookie bạn đang sử dụng
@@ -24,12 +30,26 @@ export default function AdminHeader() {
 
   const navItems = [
     { label: "Thống kê", href: "/admin" },
-    { label: "Quản lý đặt lịch", href: "/admin/schedule-manage" },
+    
     { label: "Quản lý nhân viên", href: "/admin/staff-manage" },
     { label: "Quản lý khách hàng", href: "/admin/cus-manage" },
     { label: "Quản lý thú cưng", href: "/admin/pet-manage" },
     { label: "Quản lý dịch vụ", href: "/admin/service-manage" },
   ];
+
+  const navForAdmin = [
+    { label: "Quản lý đặt lịch", href: "/admin/schedule-manage" },
+  ];
+
+  const navForStaff = [
+    { label: "Lịch của tôi", href: "/admin/staff-schedule" },
+  ];
+
+  const navOverall = [
+    ...navItems,
+    ...(isAdmin ? navForAdmin : navForStaff),
+  ]
+
 
   return (
     <header className="flex justify-between items-center py-4 px-6 bg-white shadow-sm w-full fixed top-0 left-0 z-50 h-[72px]">
@@ -39,7 +59,7 @@ export default function AdminHeader() {
       
       <nav className="flex-2">
         <ul className="flex justify-center space-x-8">
-          {navItems.map((item) => (
+          {navOverall.map((item) => (
             <li key={item.href}>
               <Link 
                 href={item.href}

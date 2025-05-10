@@ -63,12 +63,13 @@ const Login = () => {
           Cookies.set('accessToken', data.result.token, { expires: 1 });
           Cookies.set('userId', userId, { expires: 1 });
           Cookies.set('username', username, { expires: 1 });
+          Cookies.set('role', roles, { expires: 1 });
         
           console.log("User info - ID:", userId, "Username:", username, "Roles:", roles);
         
           //Kiểm tra role là mảng và chứa "ADMIN" hoặc "USER"
           if (roles && Array.isArray(roles)) {
-            if (roles.includes("ADMIN")) {
+            if (roles.includes("ADMIN") || roles.includes("STAFF")) {
               console.log("Redirecting to admin dashboard");
               router.push('/admin');
             } else if (roles.includes("CUSTOMER")) {
