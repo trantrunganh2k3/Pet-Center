@@ -40,5 +40,6 @@ public class Customer {
     List<Pet> pets = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     List<Booking> bookings = new ArrayList<>();
 }

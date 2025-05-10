@@ -8,3 +8,5 @@ export const petAPI = 'http://localhost:8080/petcenter/pets';
 export const staffAPI = 'http://localhost:8080/petcenter/staffs';
 export const serviceCategoryAPI = 'http://localhost:8080/petcenter/service_category';
 export const serviceAPI = 'http://localhost:8080/petcenter/service_detail';
+export const bookingAPI = 'http://localhost:8080/petcenter/bookings';
+export const subServiceAPI = 'http://localhost:8080/petcenter/booking_details';

@@ -1,6 +1,7 @@
 import { ServiceCategory, Pet, SubService } from '../types';
 
 interface ScheduleConfirmationProps {
+  isEditMode?: boolean;
   category: ServiceCategory | null;
   pet: Pet | null;
   subServices: SubService[];
@@ -11,6 +12,7 @@ interface ScheduleConfirmationProps {
 }
 
 const ScheduleConfirmation: React.FC<ScheduleConfirmationProps> = ({
+  isEditMode,
   category,
   pet,
   subServices,
@@ -25,7 +27,7 @@ const ScheduleConfirmation: React.FC<ScheduleConfirmationProps> = ({
     return `${days[date.getDay()]}, ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   };
 
-  const totalPrice = subServices.reduce((sum, service) => 0, 0);
+  const totalPrice = subServices.reduce((sum, service) => sum + (service.min_price + service.max_price) / 2, 0);
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -106,7 +108,7 @@ const ScheduleConfirmation: React.FC<ScheduleConfirmationProps> = ({
             onClick={onSubmit}
             className="px-8 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
           >
-            Xác nhận đặt lịch
+            {isEditMode ? 'Xác nhận cập nhật' : 'Xác nhận đặt lịch'}
           </button>
         </div>
       </div>

@@ -1,23 +1,14 @@
 package com.example.BE.service;
 
-import com.example.BE.dto.request.BookingRequest;
-import com.example.BE.dto.request.CustomerRegistrationRequest;
-import com.example.BE.dto.request.UserCreationRequest;
-import com.example.BE.dto.request.UserUpdateRequest;
+import com.example.BE.dto.request.*;
 import com.example.BE.dto.response.BookingResponse;
 import com.example.BE.dto.response.UserResponse;
-import com.example.BE.entity.Booking;
-import com.example.BE.entity.Customer;
-import com.example.BE.entity.Staff;
-import com.example.BE.entity.User;
+import com.example.BE.entity.*;
 import com.example.BE.exception.AppException;
 import com.example.BE.exception.ErrorCode;
 import com.example.BE.mapper.BookingMapper;
 import com.example.BE.mapper.UserMapper;
-import com.example.BE.repository.BookingRepository;
-import com.example.BE.repository.CustomerRepository;
-import com.example.BE.repository.StaffRepository;
-import com.example.BE.repository.UserRepository;
+import com.example.BE.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,19 +30,43 @@ public class BookingService {
     BookingRepository bookingRepository;
     BookingMapper bookingMapper;
     CustomerRepository customerRepository;
+    PetRepository petRepository;
+    ServiceRepository serviceRepository;
+    BookingDetailsRepository bookingDetailsRepository;
 
-    public BookingResponse createBooking(String customerId, BookingRequest bookingRequest) {
-        Customer customer = customerRepository.findById(customerId)
+    public BookingResponse createBooking(BookingOrderRequest request) {
+        Customer customer = customerRepository.findById(request.getCustomerId())
                 .orElseThrow(() -> new AppException(ErrorCode.CUSTOMER_NOT_FOUND));
 
-        Booking booking = bookingMapper.toBooking(bookingRequest);
-        booking.setCustomer(customer);
+        Pet pet = petRepository.findById(request.getPetId())
+                .orElseThrow(() -> new AppException(ErrorCode.PET_NOT_FOUND));
+
+        List<Services> foundServices = serviceRepository.findAllById(request.getServicesId());
+
+        Booking booking = Booking.builder()
+                .customer(customer)
+                .createdDate(request.getCreatedDate())
+                .build();
 
         bookingRepository.save(booking);
+
+        List<BookingDetails> bookingDetailsList = foundServices.stream()
+                .map(services -> BookingDetails.builder()
+                        .booking(booking)
+                        .pet(pet)
+                        .service(services)
+                        .selectedDate(request.getSelectedDate())
+                        .selectedTime(request.getSelectedTime())
+                        .build())
+                .toList();
+
+        bookingDetailsRepository.saveAll(bookingDetailsList);
+
         return bookingMapper.toBookingResponse(booking);
+
     }
 
-    public List<BookingResponse> getAllBookings(String customerId) {
+    public List<BookingResponse> getBookingEachCus(String customerId) {
         return bookingRepository.findBookingByCustomerCustomerId(customerId)
                 .stream().map(bookingMapper::toBookingResponse).toList();
     }

@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Table(name = "pet")
@@ -28,6 +31,10 @@ public class Pet {
 
     // Mối quan hệ Many-to-One với Customer
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customerId", nullable = false)
     Customer customer;
+
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    List<BookingDetails> bookingDetails = new ArrayList<>();
 }
