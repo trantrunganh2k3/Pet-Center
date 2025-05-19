@@ -20,6 +20,7 @@ public interface BookingDetailsMapper {
 
     @Mapping(source = "customerId", target = "customerId")
     @Mapping(source = "name", target = "customerName")
+    @Mapping(source = "phone", target = "phone")
     CustomerInfo toCustomerInfo(Customer customer);
 
     @Named("mapStaffInfoNullable")

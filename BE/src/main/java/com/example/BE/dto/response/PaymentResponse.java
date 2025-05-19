@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 
@@ -14,16 +15,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingResponse {
+public class PaymentResponse {
 
+    String paymentId;
     String bookingId;
-    BookingStatus status;
+    String invoiceNumber;
     String note;
-    LocalDate createdDate;
-    LocalDate updatedDate;
-    CustomerInfo customer;
-    BigInteger total;
-    int rating;
-    String comment;
-    CustomerInfo customerInfo;
+    BigInteger subtotal;
+    BigInteger discount;
+    BigInteger tax;
+    BigDecimal total;
 }

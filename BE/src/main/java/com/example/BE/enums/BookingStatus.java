@@ -7,4 +7,5 @@ public enum BookingStatus {
     InProgress,
     Completed,
     Canceled,
+    Paid,
 }

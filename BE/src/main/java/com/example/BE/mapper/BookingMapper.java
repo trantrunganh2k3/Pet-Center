@@ -25,5 +25,6 @@ public interface BookingMapper {
 
     @Mapping(target = "customerId", source = "customerId")
     @Mapping(target = "customerName", source = "name")
+    @Mapping(target = "phone", source = "phone")
     CustomerInfo toCustomerInfo(Customer customer);
 }

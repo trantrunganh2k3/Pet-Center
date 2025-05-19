@@ -63,6 +63,14 @@ public class BookingController {
                 .build();
     }
 
+    @PutMapping("/evaluate/{bookingId}")
+    ApiResponse<BookingResponse> evaluateBooking(@PathVariable String bookingId, @RequestBody BookingService.Evaluate evaluate) {
+
+        return ApiResponse.<BookingResponse>builder()
+                .result(bookingService.evaluateBooking(bookingId, evaluate))
+                .build();
+    }
+
 //    @DeleteMapping
 //    ApiResponse<BookingResponse> deleteBooking(@RequestParam("bookingId") String bookingId) {
 //

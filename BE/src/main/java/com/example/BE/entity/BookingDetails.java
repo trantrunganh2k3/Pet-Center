@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigInteger;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.Date;
@@ -30,6 +31,7 @@ public class BookingDetails {
     int priority;
     LocalDate selectedDate;
     Time selectedTime;
+    BigInteger price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bookingId", nullable = false)
