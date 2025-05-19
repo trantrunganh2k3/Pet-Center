@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,9 @@ public class Booking {
     String note;
     LocalDate createdDate;
     LocalDate updatedDate;
+    BigInteger total;
+    int rating;
+    String comment;
 
     // Mối quan hệ Many-to-One với Customer
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,4 +43,7 @@ public class Booking {
     @Builder.Default
     List<BookingDetails> bookingDetails = new ArrayList<>();
 
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    Payment payment = new Payment();
 }

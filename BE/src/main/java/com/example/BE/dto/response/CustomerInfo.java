@@ -12,4 +12,5 @@ public class CustomerInfo {
 
     String customerId;
     String customerName;
+    String phone;
 }

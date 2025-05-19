@@ -11,8 +11,7 @@ import com.example.BE.exception.ErrorCode;
 import com.example.BE.mapper.BookingMapper;
 import com.example.BE.mapper.UserMapper;
 import com.example.BE.repository.*;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -64,7 +64,7 @@ public class BookingService {
                         .selectedDate(request.getSelectedDate())
                         .selectedTime(request.getSelectedTime())
                         .priority(counter.getAndIncrement())
-                        .status(BookingDetailsStatus.Pending)
+                        .status(BookingDetailsStatus.Blocked)
                         .build())
                 .toList();
 
@@ -95,6 +95,28 @@ public class BookingService {
 
         bookingMapper.updateBooking(booking, bookingRequest);
         return bookingMapper.toBookingResponse(bookingRepository.save(booking));
+    }
+
+    public BookingResponse evaluateBooking(String bookingId, Evaluate evaluate) {
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        booking.setRating(evaluate.getRating());
+        booking.setComment(evaluate.getComment());
+
+        return bookingMapper.toBookingResponse(bookingRepository.save(booking));
+    }
+
+    /**
+     * Class đơn giản hóa chỉ chứa ID dịch vụ và ID nhân viên
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Evaluate {
+        private String comment;   // ID của dịch vụ đã có trong hệ thống
+        private int rating;  // ID của nhân viên được phân công
     }
 
     public void deleteBooking(String bookingId) {

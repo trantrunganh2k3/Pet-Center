@@ -1,91 +1,122 @@
-export interface Staff {
-  staffId: string;
-  name: string;
+import { Customer } from '@/app/types/interfaces';
+
+export type BookingStatus = 'Pending' | 'Confirmed' | 'InProgress' | 'Completed' | 'Canceled' | 'Paid';
+
+export type BookingDetailsStatus = 'Pending' | 'InProgress' | 'Completed' | 'Canceled';
+
+export type PaymentMethod = 'Cash' | 'Transfer' | 'VnPay' | 'Momo';
+
+export const PAYMENT_METHOD_OPTIONS = [
+  { value: 'Cash', label: 'Tiền mặt' },
+  { value: 'Transfer', label: 'Chuyển khoản' },
+  { value: 'VnPay', label: 'VnPay' },
+  { value: 'Momo', label: 'Momo' }
+];
+
+export interface Service {
+  serviceId: string;
+  serviceName: string;
+  description: string;
 }
 
 export interface Pet {
   petId: string;
   petName: string;
+  customerId: string;
 }
 
-export interface Services {
-  serviceId: string;
-  serviceName: string;
+export interface Staff {
+  staffId: string;
+  name: string;
 }
 
-export interface Customer {
+export interface CustomerInfo{
   customerId: string;
   customerName: string;
+  phone: string;
 }
 
 export interface BookingDetail {
   bookingDetailsId: string;
-  status: BookingDetailsStatus;
-  priority: number;
+  service: Service;
+  pet: Pet;
   selectedDate: string;
   selectedTime: string;
-  pet: Pet;
-  service: Services;
-  staff: Staff | null;
+  status: BookingDetailsStatus;
+  staff?: Staff;
+  price?: number;
 }
 
 export interface Booking {
   bookingId: string;
   status: BookingStatus;
-  note: string;
+  customer: CustomerInfo;
   createdDate: string;
-  customer: Customer;
+  updatedDate?: string;
+  note?: string;
   bookingDetails: BookingDetail[];
+  isPaid?: boolean;
+  total?: number;
+  rating?: number;
+  comment?: string;
 }
 
-export type BookingStatus = 'Pending' | 'Confirmed' | 'InProgress' | 'Completed' | 'Canceled';
-export type BookingDetailsStatus = 'Pending' | 'Ready' | 'InProgress' | 'Completed';
-
-export interface BookingStatusOption {
-  value: BookingStatus;
-  label: string;
+export interface DetailsPrice {
+  bookingDetailsId: string;
+  price: number;
 }
 
-export interface BookingDetailsStatusOption {
-  value: BookingDetailsStatus;
-  label: string;
-}
-
-export const STATUS_OPTIONS: BookingStatusOption[] = [
+export const STATUS_OPTIONS = [
   { value: 'Pending', label: 'Chờ xác nhận' },
   { value: 'Confirmed', label: 'Đã xác nhận' },
   { value: 'InProgress', label: 'Đang thực hiện' },
   { value: 'Completed', label: 'Hoàn thành' },
   { value: 'Canceled', label: 'Đã hủy' },
+  { value: 'Paid', label: 'Đã thanh toán' }
 ];
 
-export const STATUS_OPTIONS_DETAILS: BookingDetailsStatusOption[] = [
-  { value: 'Pending', label: 'Chờ xác nhận' },
-  { value: 'Ready', label: 'Sẵn sàng' },
+export const STATUS_OPTIONS_DETAILS = [
+  { value : 'Blocked', label: 'Chưa đến lượt' },
+  { value: 'Pending', label: 'Chờ thực hiện' },
   { value: 'InProgress', label: 'Đang thực hiện' },
   { value: 'Completed', label: 'Hoàn thành' },
+  { value: 'Canceled', label: 'Đã hủy' }
 ];
 
 export const getStatusColor = (status: BookingStatus | BookingDetailsStatus) => {
   switch (status) {
-    case 'Pending': return 'yellow';
-    case 'Confirmed': return 'blue';
-    case 'InProgress': return 'orange';
-    case 'Completed': return 'green';
-    case 'Canceled': return 'red';
-    case 'Ready': return 'green';
-    default: return 'gray';
+    case 'Pending':
+      return 'blue';
+    case 'Confirmed':
+      return 'cyan';
+    case 'InProgress':
+      return 'orange';
+    case 'Completed':
+      return 'green';
+    case 'Canceled':
+      return 'red';
+    case 'Paid':
+      return 'purple';
+    default:
+      return 'default';
   }
 };
 
 export const getStatusText = (status: BookingStatus | BookingDetailsStatus) => {
   switch (status) {
-    case 'Pending': return 'Chờ xác nhận';
-    case 'Confirmed': return 'Đã xác nhận';
-    case 'InProgress': return 'Đang thực hiện';
-    case 'Completed': return 'Hoàn thành';
-    case 'Canceled': return 'Đã hủy';
-    case 'Ready': return 'Sẵn sàng';
-    default: return 'Không xác định';
+    case 'Pending':
+      return 'Chờ xác nhận';
+    case 'Confirmed':
+      return 'Đã xác nhận';
+    case 'InProgress':
+      return 'Đang thực hiện';
+    case 'Completed':
+      return 'Hoàn thành';
+    case 'Canceled':
+      return 'Đã hủy';
+    case 'Paid':
+      return 'Đã thanh toán';
+    default:
+      return status;
   }
 };

@@ -108,9 +108,13 @@ const petAPIService = {
 
 // Custom hook for managing pets
 export function usePets() {
+
   const [pets, setPets] = useState<Pet[]>([]);
+  const [petsPerCustomer, setPetsPerCustomer] = useState<Pet[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const roles = Cookies.get('role');
 
   const fetchPets = async () => {
     try {
@@ -124,6 +128,20 @@ export function usePets() {
       setLoading(false);
     }
   };
+
+  const fetchPetPerCustomer = async (customerId: string) => {
+    try {
+      setLoading(true);
+      setError(null); // Reset error trước khi fetch
+      const data = await petAPIService.getByCustomerId(customerId);
+      setPetsPerCustomer(data);
+    } catch (err) {
+      handleError(err);
+    }
+    finally {
+      setLoading(false);
+    }
+  }
 
   // Hàm xử lý lỗi chung
   const handleError = (error: unknown) => {
@@ -185,6 +203,12 @@ export function usePets() {
   // Tự động tải khi component mount
   useEffect(() => {
     fetchPets();
+    if(roles === "CUSTOMER"){
+      const customerId = Cookies.get('userId');
+      if (customerId) {
+        fetchPetPerCustomer(customerId);
+      }
+    } // Lấy danh sách thú cưng theo customerId mặc định
   }, []);
 
   const fetchCustomerPets = async (customerId: string) => {
@@ -203,6 +227,7 @@ export function usePets() {
 
   return {
     pets,
+    petsPerCustomer,
     loading,
     error,
     fetchPets,

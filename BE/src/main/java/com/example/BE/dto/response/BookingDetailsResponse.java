@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigInteger;
 import java.sql.Time;
 import java.time.LocalDate;
 
@@ -33,4 +34,5 @@ public class BookingDetailsResponse {
     CustomerInfo customer;
     StaffInfo staff;
     ServiceInfo service;
+    BigInteger price;
 }

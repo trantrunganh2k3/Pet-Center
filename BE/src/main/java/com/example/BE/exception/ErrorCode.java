@@ -22,6 +22,7 @@ public enum ErrorCode {
     BOOKING_NOT_FOUND(1013, "Booking not found", HttpStatus.NOT_FOUND),
     BOOKING_DETAIL_NOT_FOUND(1014, "Booking detail not found", HttpStatus.NOT_FOUND),
     UPDATE_STATUS_DENY(1015, "You cannot update the status of this service", HttpStatus.BAD_REQUEST),
+    PAYMENT_NOT_FOUND(1016, "Payment not found", HttpStatus.NOT_FOUND),
     UNCATEGORIZED(9999, "Uncategorized", HttpStatus.INTERNAL_SERVER_ERROR),
 
     ;

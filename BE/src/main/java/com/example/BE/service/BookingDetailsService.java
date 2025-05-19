@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -92,7 +93,7 @@ public class BookingDetailsService {
                     .orElseThrow(() -> new AppException(ErrorCode.STAFF_NOT_FOUND));
 
             detailToUpdate.setPriority(i+1);
-            detailToUpdate.setStatus(i == 0 ? BookingDetailsStatus.Ready : BookingDetailsStatus.Pending);
+            detailToUpdate.setStatus(i == 0 ? BookingDetailsStatus.Pending : BookingDetailsStatus.Blocked);
             detailToUpdate.setStaff(staff);
             detailToUpdate.setBooking(booking);
             bookingDetailsRepository.save(detailToUpdate);
@@ -115,12 +116,46 @@ public class BookingDetailsService {
         private String staffId;  // ID của nhân viên được phân công
     }
 
+    public BookingResponse updateBookingPrice(String bookingId, List<DetailsPrice> details){
+        System.out.println(details);
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        Map<String, BigInteger> priceMap = details.stream()
+                .collect(Collectors.toMap(DetailsPrice::getBookingDetailsId, DetailsPrice::getPrice));
+
+        BigInteger totalPrice = BigInteger.ZERO;
+
+        for (BookingDetails detail : booking.getBookingDetails()) {
+            BigInteger detailPrice = priceMap.getOrDefault(detail.getBookingDetailsId(), BigInteger.ZERO);
+            detail.setPrice(detailPrice);
+            totalPrice = totalPrice.add(detailPrice);
+            bookingDetailsRepository.save(detail);
+        }
+
+        booking.setTotal(totalPrice);
+
+        return bookingMapper.toBookingResponse(bookingRepository.save(booking));
+    }
+
+    /**
+     * Class đơn giản hóa chỉ chứa ID dịch vụ và ID nhân viên
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DetailsPrice {
+        private String bookingDetailsId;   // ID của dịch vụ đã có trong hệ thống
+        private BigInteger price;  // ID của nhân viên được phân công
+    }
+
 
     private void validateStatusChange(BookingDetails bookingDetails, BookingDetailsStatus newStatus){
 
-        if(newStatus == BookingDetailsStatus.InProgress && bookingDetails.getStatus() != BookingDetailsStatus.Ready){
-            throw new AppException(ErrorCode.UPDATE_STATUS_DENY);
-        }
+//        if(newStatus == BookingDetailsStatus.InProgress && bookingDetails.getStatus() != BookingDetailsStatus.Ready){
+//            throw new AppException(ErrorCode.UPDATE_STATUS_DENY);
+//        }
 
         if(newStatus == BookingDetailsStatus.Completed && bookingDetails.getStatus() != BookingDetailsStatus.InProgress){
             throw new AppException(ErrorCode.UPDATE_STATUS_DENY);
@@ -149,7 +184,7 @@ public class BookingDetailsService {
                         bookingDetails.getPriority()
                 )
                 .ifPresent(nextDetail -> {
-                    nextDetail.setStatus(BookingDetailsStatus.Ready);
+                    nextDetail.setStatus(BookingDetailsStatus.Pending);
                     bookingDetailsRepository.save(nextDetail);
                 });
     }

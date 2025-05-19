@@ -51,7 +51,7 @@ export default function AccountLayout({
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="w-full mx-auto py-8 px-2">
       <h1 className="text-2xl font-bold mb-6">Quản lý tài khoản</h1>
       
       <div className="flex flex-col md:flex-row gap-8">
@@ -81,7 +81,7 @@ export default function AccountLayout({
         
         {/* Main content */}
         <div className="flex-1">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
             {children}
           </div>
         </div>

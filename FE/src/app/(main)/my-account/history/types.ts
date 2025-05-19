@@ -1,19 +1,33 @@
+import { BookingDetailsStatus, BookingStatus } from "@/app/types/booking";
+import dayjs from "dayjs";
+
 export interface Booking {
-    id: number;
+    bookingId: string;
     customerId: number; 
-    bookingDate: string;
-    totalPrice: number;
-    status: string;
-    note: string;
+    createdDate: string;
+    total?: number;
+    status: BookingStatus;
+    note?: string;
+    rating?: number;
+    comment?: string;
 }
 
 export interface BookingDetail {
-    id: number;
-    bookingId: number;
-    serviceId: number;
-    serviceName: string;
-    petId: number;
-    petName: string;
+    bookingDetailsid: string;
+    bookingId: string;
+    pet: PetInfo;
+    service: ServiceInfo;
     price: number;
-    status: string;
+    status: BookingDetailsStatus;
+    selectedDate: string;
+}
+
+interface PetInfo {
+    petId: string;
+    petName: string;
+}
+
+interface ServiceInfo{
+    serviceId: string;
+    serviceName: string;
 }

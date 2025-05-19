@@ -30,11 +30,10 @@ export default function AdminHeader() {
 
   const navItems = [
     { label: "Thống kê", href: "/admin" },
-    
-    { label: "Quản lý nhân viên", href: "/admin/staff-manage" },
-    { label: "Quản lý khách hàng", href: "/admin/cus-manage" },
-    { label: "Quản lý thú cưng", href: "/admin/pet-manage" },
-    { label: "Quản lý dịch vụ", href: "/admin/service-manage" },
+    { label: "Nhân viên", href: "/admin/staff-manage" },
+    { label: "Khách hàng", href: "/admin/cus-manage" },
+    { label: "Thú cưng", href: "/admin/pet-manage" },
+    { label: "Dịch vụ", href: "/admin/service-manage" },
   ];
 
   const navForAdmin = [
@@ -54,10 +53,14 @@ export default function AdminHeader() {
   return (
     <header className="flex justify-between items-center py-4 px-6 bg-white shadow-sm w-full fixed top-0 left-0 z-50 h-[72px]">
       <div className="flex-1">
-        <Link href="/" className="text-xl font-bold">Logo</Link>
+        <Link href="/" className="text-xl font-bold flex items-center gap-2">
+          {/* Logo can be replaced with an actual image or SVG */}
+          <img src="/images/logo.jpg" alt="Logo" className="h-10" />
+          <span className="text-orange-500">Pet House</span>
+        </Link>
       </div>
       
-      <nav className="flex-2">
+      <nav className="flex-6">
         <ul className="flex justify-center space-x-8">
           {navOverall.map((item) => (
             <li key={item.href}>

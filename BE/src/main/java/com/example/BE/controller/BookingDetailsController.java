@@ -57,4 +57,12 @@ public class BookingDetailsController {
                 .result(bookingDetailsService.arrangeBookingDetails(bookingId, arrangement))
                 .build();
     }
+
+    @PutMapping("/price/{bookingId}")
+    public ApiResponse<BookingResponse> updatePrice(@PathVariable("bookingId") String bookingId, @RequestBody List<BookingDetailsService.DetailsPrice> price) {
+
+        return ApiResponse.<BookingResponse>builder()
+                .result(bookingDetailsService.updateBookingPrice(bookingId, price))
+                .build();
+    }
 }
