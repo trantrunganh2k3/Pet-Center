@@ -16,13 +16,13 @@ export function UpdateStatusModal({ open, onClose, onUpdate }: UpdateStatusModal
       footer={null}
     >
       <div className="flex flex-col gap-2">
-        <Button block type="primary" onClick={() => onUpdate('CONFIRMED')}>
+        <Button block type="primary" onClick={() => onUpdate('Confirmed')}>
           Xác nhận
         </Button>
-        <Button block onClick={() => onUpdate('COMPLETED')}>
+        <Button block onClick={() => onUpdate('Completed')}>
           Hoàn thành
         </Button>
-        <Button block danger onClick={() => onUpdate('CANCELLED')}>
+        <Button block danger onClick={() => onUpdate('Canceled')}>
           Hủy
         </Button>
       </div>

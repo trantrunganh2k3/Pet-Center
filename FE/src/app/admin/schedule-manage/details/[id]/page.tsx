@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Button, Tag, Select, Spin, Card } from "antd";
+import Rate from "antd/es/rate";
 import { toast } from "react-toastify";
 import "../styles.css";
 import { ArrowLeftOutlined, ArrowUpOutlined, ArrowDownOutlined, ClockCircleOutlined, LoadingOutlined } from "@ant-design/icons";
@@ -43,7 +44,7 @@ export default function BookingDetailsPage({ params }: { params: Promise<{ id: s
   const [staffs, setStaffs] = useState<Staff[]>([]);
   const [selectedStaffs, setSelectedStaffs] = useState<Record<string, string>>({});
   const [isUpdateStatusModalOpen, setIsUpdateStatusModalOpen] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<'all' | BookingStatus>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | BookingDetailsStatus>('all');
   const [updatingDetailStatus, setUpdatingDetailStatus] = useState<string | null>(null);
   const router = useRouter();
 
@@ -268,8 +269,22 @@ export default function BookingDetailsPage({ params }: { params: Promise<{ id: s
             <div className="flex justify-between items-start mb-4">
               <div className="space-y-2">
                 <p><span className="font-medium">Khách hàng:</span> {booking.customer?.customerName}</p>
+                <p><span className="font-medium">Số điện thoại:</span> {booking.customer?.phone}</p>
                 <p><span className="font-medium">Ngày đặt:</span> {dayjs(booking.createdDate).format('DD/MM/YYYY HH:mm')}</p>
                 {booking.note && <p><span className="font-medium">Ghi chú:</span> {booking.note}</p>}
+                {booking.rating && booking.rating > 0 && (
+                  <>
+                    <p>
+                      <span className="font-medium">Đánh giá:</span>{' '}
+                      <Rate disabled defaultValue={booking.rating} />
+                    </p>
+                    {booking.comment && (
+                      <p>
+                        <span className="font-medium">Nhận xét:</span> {booking.comment}
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
               <Tag color={getStatusColor(booking.status)} style={{ fontSize: '1rem', padding: '4px 12px' }}>
                 {getStatusText(booking.status)}
@@ -353,7 +368,7 @@ export default function BookingDetailsPage({ params }: { params: Promise<{ id: s
               <Button
                 key={option.value}
                 type={filterStatus === option.value ? 'primary' : 'default'}
-                onClick={() => setFilterStatus(option.value)}
+              onClick={() => setFilterStatus(option.value as BookingDetailsStatus)}
               >
                 {option.label}
               </Button>
