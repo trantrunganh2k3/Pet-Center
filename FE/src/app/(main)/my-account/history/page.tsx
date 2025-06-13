@@ -158,7 +158,7 @@ export default function HistoryPage() {
                         title: 'Tổng tiền',
                         dataIndex: 'total',
                         key: 'total',
-                        render: (total: number) => `${total.toLocaleString('vi-VN')} VNĐ`
+                        render: (total: number | null) => total != null ? `${total.toLocaleString('vi-VN')} VNĐ` : '0 VNĐ'
                     },
                     {
                         title: 'Trạng thái',

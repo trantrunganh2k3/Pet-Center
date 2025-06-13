@@ -49,6 +49,8 @@ public class BookingService {
         Booking booking = Booking.builder()
                 .customer(customer)
                 .createdDate(request.getCreatedDate())
+                .bookingDate(request.getSelectedDate())
+                .bookingTime(request.getSelectedTime())
                 .status(BookingStatus.Pending)
                 .build();
 

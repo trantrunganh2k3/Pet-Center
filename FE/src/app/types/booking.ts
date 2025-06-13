@@ -53,10 +53,10 @@ export interface Booking {
   customer: CustomerInfo;
   createdDate: string;
   updatedDate?: string;
+  bookingDate: string;
+  bookingTime: string;
   note?: string;
   bookingDetails: BookingDetail[];
-  isPaid?: boolean;
-  total?: number;
   rating?: number;
   comment?: string;
 }

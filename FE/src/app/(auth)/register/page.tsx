@@ -72,7 +72,7 @@ const Register = () => {
         toast.success("Đăng ký thành công!");
         
         // Chuyển hướng đến trang đăng nhập
-        router.push("/auth/login");
+        router.push("/login");
       }
     }catch(error){
       toast.error("Login failed. Please check your credentials.");

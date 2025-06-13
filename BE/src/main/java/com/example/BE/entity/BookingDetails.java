@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.time.LocalDate;
-import java.util.Date;
 
 
 @Entity
