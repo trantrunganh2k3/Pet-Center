@@ -40,9 +40,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request
-                        // Swagger endpoints first - allow all methods
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-                        "/swagger-resources/**", "/webjars/**", "/configuration/**").permitAll()
+                        // Swagger endpoints first - allow all methods and ignore JWT completely
+                        .requestMatchers("/v3/api-docs/**", "/v3/api-docs.yaml", "/swagger-ui/**", 
+                        "/swagger-ui.html", "/swagger-resources/**", "/webjars/**", 
+                        "/configuration/**", "/swagger-ui/index.html", "/api-docs/**").permitAll()
                         // Auth endpoints - POST only
                         .requestMatchers(HttpMethod.POST, "/auth/token", "/auth/introspect", 
                         "/auth/logout", "/auth/refresh").permitAll()
@@ -51,6 +52,7 @@ public class SecurityConfig {
                         // All other requests need authentication
                         .anyRequest().authenticated());
 
+        // Configure JWT for authenticated endpoints only
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
@@ -58,6 +60,9 @@ public class SecurityConfig {
         );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        
+        // Allow frames for Swagger UI (some versions need this)
+        httpSecurity.headers(headers -> headers.frameOptions().sameOrigin());
 
         return httpSecurity.build();
     }
