@@ -1,5 +1,7 @@
 package com.example.BE.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.example.BE.dto.request.ApiResponse;
 import com.example.BE.dto.request.BookingOrderRequest;
 import com.example.BE.dto.request.BookingRequest;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequestMapping("/bookings")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Booking Management", description = "Pet service booking management")
 public class BookingController {
 
     BookingService bookingService;

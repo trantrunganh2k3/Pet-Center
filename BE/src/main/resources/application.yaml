@@ -27,5 +27,14 @@ logging:
     org.springframework.web: DEBUG
     com.example.BE: DEBUG
 
-
-
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+    displayRequestDuration: true
+  show-actuator: false

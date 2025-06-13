@@ -28,6 +28,9 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {"/users",
             "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
             "/users/register", "/users/staff-register",
+            // Swagger endpoints
+            "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
+            "/swagger-resources/**", "/webjars/**"
     };
 
     @Autowired
@@ -36,7 +39,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                request.requestMatchers(HttpMethod.POST, "/users", "/auth/token", "/auth/introspect", 
+                        "/auth/logout", "/auth/refresh", "/users/register", "/users/staff-register").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
+                        "/swagger-resources/**", "/webjars/**").permitAll()
                         //.requestMatchers(HttpMethod.GET, "/users/{userID}").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated());
 

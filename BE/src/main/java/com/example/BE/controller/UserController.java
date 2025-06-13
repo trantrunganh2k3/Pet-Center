@@ -8,6 +8,7 @@ import com.example.BE.dto.response.UserResponse;
 import com.example.BE.entity.User;
 import com.example.BE.repository.UserRepository;
 import com.example.BE.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "User Management", description = "User and registration management")
 public class UserController {
 
     UserService userService;

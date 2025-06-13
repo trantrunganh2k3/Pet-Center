@@ -1,5 +1,7 @@
 package com.example.BE.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.example.BE.dto.request.ApiResponse;
 import com.example.BE.dto.request.ServiceRequest;
 import com.example.BE.dto.response.ServiceResponse;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/service_detail")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Service Management", description = "Pet care service management")
 public class ServiceController {
 
     ServiceCenterService serviceCenterService;
