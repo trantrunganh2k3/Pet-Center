@@ -39,11 +39,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, "/users", "/auth/token", "/auth/introspect", 
-                        "/auth/logout", "/auth/refresh", "/users/register", "/users/staff-register").permitAll()
+                request
+                        // Swagger endpoints first - allow all methods
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-                        "/swagger-resources/**", "/webjars/**").permitAll()
-                        //.requestMatchers(HttpMethod.GET, "/users/{userID}").hasAuthority("ROLE_ADMIN")
+                        "/swagger-resources/**", "/webjars/**", "/configuration/**").permitAll()
+                        // Auth endpoints - POST only
+                        .requestMatchers(HttpMethod.POST, "/auth/token", "/auth/introspect", 
+                        "/auth/logout", "/auth/refresh").permitAll()
+                        // Registration endpoints - POST only
+                        .requestMatchers(HttpMethod.POST, "/users", "/users/register", "/users/staff-register").permitAll()
+                        // All other requests need authentication
                         .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 ->
