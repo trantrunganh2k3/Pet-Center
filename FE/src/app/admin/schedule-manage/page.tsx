@@ -241,8 +241,8 @@ const ScheduleManagePage = () => {
     },
     {
       title: "Ngày đặt",
-      dataIndex: "createdDate",
-      key: "createdDate",
+      dataIndex: "bookingDate",
+      key: "bookingDate",
       width: 120,
       align: 'center',
       render: (date: string) => dayjs(date).format('DD/MM/YYYY')
@@ -367,7 +367,13 @@ const ScheduleManagePage = () => {
           <DatePicker
             placeholder="Chọn ngày"
             format="DD/MM/YYYY"
-            onChange={(_: Dayjs | null, dateString: string) => setSelectedDate(dateString)}
+            onChange={(_: Dayjs | null, dateString: string | string[]) => {
+              if (typeof dateString === 'string') {
+                setSelectedDate(dateString);
+              } else {
+                setSelectedDate(dateString[0] || null);
+              }
+            }}
             style={{ width: 150 }}
           />
 
