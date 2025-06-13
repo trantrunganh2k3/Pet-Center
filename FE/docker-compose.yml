@@ -1,0 +1,17 @@
+
+services:
+  frontend:
+    container_name: petcare-fe-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deps          # chỉ cần cài dep; bỏ qua bước build production
+    command: npm run dev    # hot reload
+    volumes:
+      - .:/app              # mount mã nguồn
+      - /app/node_modules   # tránh đè node_modules của container
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      # NEXT_PUBLIC_API_URL: http://localhost:8000
