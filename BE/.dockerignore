@@ -1,0 +1,48 @@
+# Target directory (build output)
+target/
+!target/*.jar
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Documentation (not needed in container)
+*.md
+BE-api-documentation.md
+BE-project-overview.md
+
+# Docker files (avoid recursion)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Test files
+src/test/
+
+# Development configs
+application-dev.yaml
+application-local.yaml
