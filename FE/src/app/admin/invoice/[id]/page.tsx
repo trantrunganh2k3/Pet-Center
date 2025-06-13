@@ -67,9 +67,25 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
   };
 
   const handleConfirmPayment = async () => {
+    // Kiểm tra validation trước khi thanh toán
+    if (!hasAllPrices) {
+      toast.error('Vui lòng cập nhật giá cho tất cả dịch vụ trước khi thanh toán');
+      return;
+    }
+
+    if (subtotal <= 0) {
+      toast.error('Tổng tiền phải lớn hơn 0');
+      return;
+    }
+
     console.log('Confirming payment with the following details:');
     console.log('Booking ID:', params.id);
     console.log('Payment Method:', paymentMethod);
+    console.log('Subtotal:', subtotal);
+    console.log('Discount:', discount);
+    console.log('Tax:', tax);
+    console.log('Total:', total);
+    
     try {
       const response = await axios.post<{ code: number; message?: string; result?: any }>(
         `${paymentAPI}`,
@@ -109,9 +125,13 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
     );
   }
 
-  const subtotal = booking.total ?? 0;
+  // Tính subtotal từ tổng giá các dịch vụ
+  const subtotal = details.reduce((sum, detail) => sum + (detail.price || 0), 0);
   const tax = Math.round(subtotal * 0.08); // 8% thuế
   const total = subtotal - discount + tax;
+
+  // Kiểm tra xem tất cả dịch vụ đã có giá chưa
+  const hasAllPrices = details.length > 0 && details.every(detail => detail.price && detail.price > 0);
 
   return (
     <div className="p-6">
@@ -136,12 +156,30 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
         <div className="mb-4 p-6 bg-white rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-4">Chi tiết dịch vụ</h2>
           {details && details.length > 0 ? (
-            details.map((detail) => (
-            <div key={detail.bookingDetailsId} className="flex justify-between py-2">
-              <span>{detail.service.serviceName}</span>
-              <span>{detail.price?.toLocaleString('vi-VN')} VND</span>
-            </div>
-            ))
+            <>
+              {details.map((detail) => (
+                <div key={detail.bookingDetailsId} className="flex justify-between py-2">
+                  <span>{detail.service.serviceName}</span>
+                  <span className={`${!detail.price || detail.price <= 0 ? 'text-red-500' : ''}`}>
+                    {detail.price && detail.price > 0 
+                      ? `${detail.price.toLocaleString('vi-VN')} VND`
+                      : 'Chưa có giá'
+                    }
+                  </span>
+                </div>
+              ))}
+              
+              {!hasAllPrices && (
+                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-center">
+                    <span className="text-yellow-600 font-medium">⚠️ Cảnh báo:</span>
+                    <span className="ml-2 text-yellow-800">
+                      Một số dịch vụ chưa có giá. Vui lòng cập nhật giá trước khi thanh toán.
+                    </span>
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center text-gray-500">Không có chi tiết dịch vụ</div>
           )}
@@ -215,7 +253,19 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
           </button>
           <button
             onClick={handleConfirmPayment}
-            className="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded text-white"
+            disabled={!hasAllPrices || subtotal <= 0}
+            className={`px-6 py-2 rounded text-white ${
+              !hasAllPrices || subtotal <= 0
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-600'
+            }`}
+            title={
+              !hasAllPrices 
+                ? 'Vui lòng cập nhật giá cho tất cả dịch vụ'
+                : subtotal <= 0
+                ? 'Tổng tiền phải lớn hơn 0'
+                : 'Xác nhận thanh toán'
+            }
           >
             Xác nhận thanh toán
           </button>
