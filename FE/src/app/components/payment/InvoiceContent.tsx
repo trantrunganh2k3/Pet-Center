@@ -8,7 +8,8 @@ interface InvoiceContentProps {
 }
 
 const InvoiceContent = ({ booking, details }: InvoiceContentProps) => {
-  const subtotal = booking.total ?? 0;
+  // Tính subtotal từ tổng giá các dịch vụ thay vì lấy từ booking.total
+  const subtotal = details.reduce((sum, detail) => sum + (detail.price || 0), 0);
   const tax = Math.round(subtotal * 0.08);
   const total = subtotal + tax;
 

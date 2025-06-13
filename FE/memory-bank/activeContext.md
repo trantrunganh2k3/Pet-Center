@@ -19,6 +19,14 @@
    - Form validation
    - Error handling
 
+### Vừa hoàn thành
+1. **Sửa lỗi module Invoice** (2025-01-06)
+   - ✅ Sửa logic tính subtotal từ tổng giá dịch vụ thay vì booking.total
+   - ✅ Thêm validation và cảnh báo khi chưa có giá
+   - ✅ Disable nút thanh toán khi chưa đủ điều kiện
+   - ✅ Cải thiện UX với thông báo rõ ràng
+   - ✅ Đồng bộ logic tính toán giữa các component
+
 ### Đang thực hiện
 1. **Quản lý thú cưng**
    - File PetsData.tsx đã được tạo nhưng đang được comment out
