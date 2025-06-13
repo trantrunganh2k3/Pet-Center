@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigInteger;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ public class Booking {
     String note;
     LocalDate createdDate;
     LocalDate updatedDate;
+    LocalDate bookingDate;
+    Time bookingTime;
     BigInteger total;
     int rating;
     String comment;
@@ -44,6 +47,5 @@ public class Booking {
     List<BookingDetails> bookingDetails = new ArrayList<>();
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    Payment payment = new Payment();
+    Payment payment;
 }

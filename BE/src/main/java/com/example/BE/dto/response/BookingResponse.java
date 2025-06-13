@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigInteger;
+import java.sql.Time;
 import java.time.LocalDate;
 
 @Data
@@ -21,6 +22,8 @@ public class BookingResponse {
     String note;
     LocalDate createdDate;
     LocalDate updatedDate;
+    LocalDate bookingDate;
+    Time bookingTime;
     CustomerInfo customer;
     BigInteger total;
     int rating;
