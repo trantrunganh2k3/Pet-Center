@@ -1,5 +1,7 @@
 package com.example.BE.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import com.example.BE.dto.request.ApiResponse;
 import com.example.BE.dto.request.PetRequest;
 import com.example.BE.dto.response.PetResponse;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/pets")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Pet Management", description = "Pet information management")
 public class PetController {
 
     PetService petService;
