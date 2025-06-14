@@ -1,5 +1,6 @@
 'use client';
 
+import Cookies from "js-cookie";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -57,6 +58,17 @@ export default function Home() {
     }
   ];
 
+  const handleClick = () => {
+    // Logic xử lý khi người dùng click vào nút "Đặt lịch ngay"
+    console.log("Đặt lịch ngay được click");
+    // Bạn có thể chuyển hướng đến trang đặt lịch hoặc mở modal
+    if( Cookies.get("access_token") ) {
+      window.location.href = "/shedule";
+    } else {
+      window.location.href = "/login";
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -69,12 +81,12 @@ export default function Home() {
           <p className="text-xl text-gray-600 max-w-2xl">
             Với đội ngũ chuyên gia giàu kinh nghiệm, chúng tôi cam kết mang đến dịch vụ chất lượng cao nhất cho thú cưng của bạn
           </p>
-          <Link 
-            href="/booking" 
+          <button 
+            onClick={handleClick} 
             className="bg-[#FF6B2C] hover:bg-[#ff5a14] text-white font-semibold px-8 py-4 rounded-lg transition-all transform hover:scale-105 shadow-lg"
           >
             Đặt lịch ngay
-          </Link>
+          </button>
         </div>
       </section>
 
