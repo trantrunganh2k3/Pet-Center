@@ -62,7 +62,8 @@ export default function Home() {
     // Logic xử lý khi người dùng click vào nút "Đặt lịch ngay"
     console.log("Đặt lịch ngay được click");
     // Bạn có thể chuyển hướng đến trang đặt lịch hoặc mở modal
-    if( Cookies.get("access_token") ) {
+    if( Cookies.get("accessToken") ) {
+      console.log("User is logged in, redirecting to schedule page");
       window.location.href = "/shedule";
     } else {
       window.location.href = "/login";
