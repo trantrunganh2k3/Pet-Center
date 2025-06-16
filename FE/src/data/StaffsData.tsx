@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
-import { staffAPI } from '../app/APIRoute';
+import { staffAPI, addStaffAPI } from '../app/APIRoute';
 import { Staff, StaffFormData, APIResponse } from '../types/interfaces';
 
 interface ServerResponse<T = any> {
@@ -24,7 +24,7 @@ type ApiError = {
 const staffAPIService = {
   async create(data: StaffFormData): Promise<Staff> {
     const response = await axios.post<ServerResponse<Staff>>(
-      `http://localhost:8080/petcenter/users/staff-register`,
+      `${addStaffAPI}`,
       data
     );
     if (response.data.code !== 1000) {

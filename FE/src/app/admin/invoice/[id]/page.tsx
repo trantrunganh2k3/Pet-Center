@@ -17,6 +17,7 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
   const [discount, setDiscount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Cash');
   const [note, setNote] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -66,29 +67,29 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
     }
   };
 
-  const handleConfirmPayment = async () => {
-    // Kiểm tra validation trước khi thanh toán
+  // Tính subtotal từ tổng giá các dịch vụ
+  const subtotal = details.reduce((sum, detail) => sum + (detail.price || 0), 0);
+  const tax = Math.round(subtotal * 0.08); // 8% thuế
+  const total = subtotal - discount + tax;
+
+  // Kiểm tra xem tất cả dịch vụ đã có giá chưa
+  const hasAllPrices = details.length > 0 && details.every(detail => detail.price && detail.price > 0);
+
+  const createInvoice = async () => {
+    // Kiểm tra validation trước khi tạo hóa đơn
     if (!hasAllPrices) {
-      toast.error('Vui lòng cập nhật giá cho tất cả dịch vụ trước khi thanh toán');
-      return;
+      toast.error('Vui lòng cập nhật giá cho tất cả dịch vụ trước khi tạo hóa đơn');
+      return null;
     }
 
     if (subtotal <= 0) {
       toast.error('Tổng tiền phải lớn hơn 0');
-      return;
+      return null;
     }
 
-    console.log('Confirming payment with the following details:');
-    console.log('Booking ID:', params.id);
-    console.log('Payment Method:', paymentMethod);
-    console.log('Subtotal:', subtotal);
-    console.log('Discount:', discount);
-    console.log('Tax:', tax);
-    console.log('Total:', total);
-    
     try {
       const response = await axios.post<{ code: number; message?: string; result?: any }>(
-        `${paymentAPI}`,
+        `${bookingAPI}/create-invoice`,
         {
           bookingId: params.id,
           method: paymentMethod,
@@ -96,7 +97,6 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
           discount: discount,
           tax: tax,
           total: total,
-          paymentDate: dayjs().format('YYYY-MM-DD'),
           note: note
         },
         {
@@ -106,14 +106,71 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
 
       const responseData = response.data;
       if (responseData.code !== 1000) {
-        throw new Error(responseData.message || 'Lỗi khi xác nhận thanh toán');
+        throw new Error(responseData.message || 'Lỗi khi tạo hóa đơn');
       }
 
-      toast.success('Xác nhận thanh toán thành công');
-      router.push('/admin/schedule-manage');
+      toast.success('Tạo hóa đơn thành công');
+      return responseData.result;
+    } catch (error: any) {
+      console.error('Invoice creation error:', error);
+      toast.error(error.message || 'Lỗi khi tạo hóa đơn');
+      return null;
+    }
+  };
+
+  const getVNPayLink = async (paymentId: string) => {
+    try {
+      setIsProcessing(true);
+      const response = await axios.post<{ code: number; message?: string; result?: any }>(
+        `${paymentAPI}/${paymentId}/pay-link`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${Cookies.get('accessToken')}` }
+        }
+      );
+
+      if (response.data.code !== 1000) {
+        throw new Error(response.data.message || 'Lỗi khi lấy link thanh toán');
+      }
+
+      return response.data.result;
+    } catch (error: any) {
+      console.error('VNPay link error:', error);
+      toast.error(error.message || 'Lỗi khi lấy link thanh toán VNPAY');
+      return null;
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleConfirmPayment = async () => {
+    try {
+      setIsProcessing(true);
+      
+      // Bước 1: Tạo hóa đơn
+      const invoiceResult = await createInvoice();
+      if (!invoiceResult) return; // Nếu tạo hóa đơn thất bại, dừng xử lý
+
+      // Bước 2: Xử lý theo phương thức thanh toán
+      if (paymentMethod === 'VNPAY') {
+        // Nếu là VNPAY, lấy payment link và chuyển hướng
+        const paymentId = invoiceResult.paymentId;
+        const paymentUrl = await getVNPayLink(paymentId);
+        
+        if (paymentUrl) {
+          // Chuyển hướng đến trang thanh toán VNPay
+          window.location.href = paymentUrl;
+        }
+      } else {
+        // Nếu là Cash, hiển thị thông báo thành công và quay lại trang quản lý
+        toast.success('Thanh toán thành công');
+        router.push('/admin/schedule-manage');
+      }
     } catch (error: any) {
       console.error('Payment error:', error);
-      toast.error(error.message || 'Lỗi khi xác nhận thanh toán');
+      toast.error(error.message || 'Lỗi khi xử lý thanh toán');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -124,14 +181,6 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
       </div>
     );
   }
-
-  // Tính subtotal từ tổng giá các dịch vụ
-  const subtotal = details.reduce((sum, detail) => sum + (detail.price || 0), 0);
-  const tax = Math.round(subtotal * 0.08); // 8% thuế
-  const total = subtotal - discount + tax;
-
-  // Kiểm tra xem tất cả dịch vụ đã có giá chưa
-  const hasAllPrices = details.length > 0 && details.every(detail => detail.price && detail.price > 0);
 
   return (
     <div className="p-6">
@@ -253,9 +302,9 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
           </button>
           <button
             onClick={handleConfirmPayment}
-            disabled={!hasAllPrices || subtotal <= 0}
+            disabled={!hasAllPrices || subtotal <= 0 || isProcessing}
             className={`px-6 py-2 rounded text-white ${
-              !hasAllPrices || subtotal <= 0
+              !hasAllPrices || subtotal <= 0 || isProcessing
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-blue-500 hover:bg-blue-600'
             }`}
@@ -264,10 +313,12 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
                 ? 'Vui lòng cập nhật giá cho tất cả dịch vụ'
                 : subtotal <= 0
                 ? 'Tổng tiền phải lớn hơn 0'
+                : isProcessing
+                ? 'Đang xử lý...'
                 : 'Xác nhận thanh toán'
             }
           >
-            Xác nhận thanh toán
+            {isProcessing ? 'Đang xử lý...' : 'Xác nhận thanh toán'}
           </button>
         </div>
       </div>

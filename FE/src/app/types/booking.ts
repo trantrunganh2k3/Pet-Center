@@ -4,13 +4,11 @@ export type BookingStatus = 'Pending' | 'Confirmed' | 'InProgress' | 'Completed'
 
 export type BookingDetailsStatus = 'Pending' | 'InProgress' | 'Completed' | 'Canceled';
 
-export type PaymentMethod = 'Cash' | 'Transfer' | 'VnPay' | 'Momo';
+export type PaymentMethod = 'Cash' | 'VNPAY';
 
 export const PAYMENT_METHOD_OPTIONS = [
   { value: 'Cash', label: 'Tiền mặt' },
-  { value: 'Transfer', label: 'Chuyển khoản' },
-  { value: 'VnPay', label: 'VnPay' },
-  { value: 'Momo', label: 'Momo' }
+  { value: 'VNPAY', label: 'VNPAY' }
 ];
 
 export interface Service {

@@ -1,5 +1,6 @@
 export const loginAPI = 'http://localhost:8080/petcenter/auth/token';
 export const registerAPI = 'http://localhost:8080/petcenter/users/register';
+export const addStaffAPI = 'http://localhost:8080/petcenter/users/staff-register';
 export const authenticateAPI = 'http://localhost:8080/petcenter/auth/introspect';
 export const logoutAPI = 'http://localhost:8080/petcenter/auth/logout';
 export const getCustomerAPI = 'http://localhost:8080/petcenter/customers/myInfo';
