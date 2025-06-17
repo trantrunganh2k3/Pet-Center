@@ -67,16 +67,20 @@ public class PaymentService {
         return paymentGateway.buildPayUrl(payment, clientIp);
     }
 
-    public void handleCallback(Map<String, String> params, PaymentMethod method){
+    public String handleCallback(Map<String, String> params, PaymentMethod method){
         PaymentGateway paymentGateway = paymentGatewayFactory.of(method);
         PaymentGateway.GatewayResult result = paymentGateway.verifyCallback(params);
-        if(!result.success()) return;
+        if(!result.success())
+            throw new AppException(ErrorCode.INVALID_KEY);
 
         Payment payment = paymentRepository.findById(result.paymentId())
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
 
         if(!payment.isPaid()){
             payment.markPaid(result.gatewayTxnNo());
+            paymentRepository.save(payment);
         }
+
+        return payment.getPaymentId();
     }
 }

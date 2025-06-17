@@ -11,7 +11,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 
@@ -19,10 +23,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/payment")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentController {
 
-    PaymentService paymentService;
+    private final PaymentService paymentService;
+
+    @Value("${fe.success-url}")
+    private String feSuccessUrl;
 
     @PostMapping
     ApiResponse<PaymentResponse> createPayment(@RequestBody @Valid PaymentRequest paymentRequest) {
@@ -57,11 +63,13 @@ public class PaymentController {
     }
 
     @GetMapping("/vnpay/return")
-    ApiResponse<String> returnVnpay(@RequestParam Map<String, String> all) {
+    ResponseEntity<Void> returnVnpay(@RequestParam Map<String, String> all) {
 
-        paymentService.handleCallback(all, PaymentMethod.VNPAY);
-        return ApiResponse.<String>builder()
-                .result("OK")
+        String paymentId = paymentService.handleCallback(all, PaymentMethod.VNPAY);
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header(HttpHeaders.LOCATION,
+                        feSuccessUrl + "?payment=" + paymentId)
                 .build();
     }
 
