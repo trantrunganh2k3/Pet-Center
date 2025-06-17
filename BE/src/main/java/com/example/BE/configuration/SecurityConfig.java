@@ -30,6 +30,10 @@ public class SecurityConfig {
             "/users/register", "/users/staff-register",
     };
 
+    private final String[] PAYMENT_ENDPOINTS = {
+            "/payment/vnpay/return",
+    };
+
     @Autowired
     private CustomJwtDecoder jwtDecoder;
 
@@ -37,6 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, PAYMENT_ENDPOINTS).permitAll()
                         //.requestMatchers(HttpMethod.GET, "/users/{userID}").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated());
 

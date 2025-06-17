@@ -89,7 +89,7 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
 
     try {
       const response = await axios.post<{ code: number; message?: string; result?: any }>(
-        `${bookingAPI}/create-invoice`,
+        `${paymentAPI}`,
         {
           bookingId: params.id,
           method: paymentMethod,
