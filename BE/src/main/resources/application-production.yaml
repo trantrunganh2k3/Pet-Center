@@ -3,5 +3,11 @@ jwt:
   valid-duration: 3600 #in second
   refreshable-duration: 360000 #in second
 
+vnp:
+  tmn-code: HUUXL4C6
+  hash-secret: 2548W0FS0J3PPLO8RTGIGT57SX1TXRG1
+  pay-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  return-url:
+
 
 
