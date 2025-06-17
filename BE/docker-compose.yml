@@ -19,8 +19,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    # cpus: 0.5
-    # mem_limit: 512M
+    cpus: 0.5
+    mem_limit: 512M
     # deploy:
     #   resources:
     #     limits:
@@ -73,8 +73,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-    # cpus: 3.0
-    # mem_limit: 3G
+    cpus: 2.0
+    mem_limit: 2G
     # deploy:
     #   resources:
     #     limits:
