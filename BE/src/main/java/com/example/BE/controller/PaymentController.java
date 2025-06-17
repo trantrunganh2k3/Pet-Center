@@ -3,13 +3,17 @@ package com.example.BE.controller;
 import com.example.BE.dto.request.ApiResponse;
 import com.example.BE.dto.request.PaymentRequest;
 import com.example.BE.dto.response.PaymentResponse;
-import com.example.BE.service.PaymentService;
+import com.example.BE.enums.PaymentMethod;
+import com.example.BE.service.payment.PaymentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -41,6 +45,32 @@ public class PaymentController {
 
         return ApiResponse.<PaymentResponse>builder()
                 .result(paymentService.getPaymentByBookingId(bookingId))
+                .build();
+    }
+
+    @PostMapping("/{paymentId}/pay-link")
+    ApiResponse<String> getPayLink(@PathVariable String paymentId, HttpServletRequest request){
+
+        return ApiResponse.<String>builder()
+                .result(paymentService.createPayLink(paymentId, request.getRemoteAddr()))
+                .build();
+    }
+
+    @GetMapping("/vnpay/return")
+    ApiResponse<String> returnVnpay(@RequestParam Map<String, String> all) {
+
+        paymentService.handleCallback(all, PaymentMethod.VNPAY);
+        return ApiResponse.<String>builder()
+                .result("OK")
+                .build();
+    }
+
+    @PostMapping("/vnpay/ipn")
+    public ApiResponse<String> ipnVnpay(@RequestParam Map<String,String> all) {
+
+        paymentService.handleCallback(all, PaymentMethod.VNPAY);
+        return ApiResponse.<String>builder()
+                .result("OK")
                 .build();
     }
 }

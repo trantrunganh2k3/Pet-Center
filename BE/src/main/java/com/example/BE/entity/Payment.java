@@ -35,4 +35,11 @@ public class Payment {
     BigInteger discount;
     BigInteger tax;
     BigDecimal total;
+    boolean paid = false;
+
+    public void markPaid(String txnNo){
+        if (this.paid) throw new IllegalStateException("Payment has already been paid");
+        this.paid = true;
+        this.invoiceNumber = txnNo;
+    }
 }
