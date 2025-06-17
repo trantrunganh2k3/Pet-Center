@@ -7,8 +7,8 @@ vnp:
   tmn-code: HUUXL4C6
   hash-secret: 2548W0FS0J3PPLO8RTGIGT57SX1TXRG1
   pay-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-  return-url: http://14.225.220.204/petcenter/payment/vnpay/return
+  return-url: http://localhost:8080/petcenter/payment/vnpay/return
 
 fe:
-  success-url: http://14.225.220.204:3000/invoice/vnpay
+  success-url: http://localhost:3000/invoice/vnpay
 

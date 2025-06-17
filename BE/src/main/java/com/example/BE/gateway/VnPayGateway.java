@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -40,7 +41,8 @@ public class VnPayGateway implements PaymentGateway {
         params.put("vnp_TxnRef", payment.getPaymentId());
         params.put("vnp_OrderInfo", payment.getPaymentId());
         params.put("vnp_OrderType", "other");
-        params.put("vnp_Amount", String.valueOf(payment.getTotal()));
+        BigDecimal amount = payment.getTotal().multiply(BigDecimal.valueOf(100));
+        params.put("vnp_Amount", amount.toBigInteger().toString());
         params.put("vnp_CurrCode", "VND");
         params.put("vnp_IpAddr", clientIp);
         params.put("vnp_Locale", "vn");
