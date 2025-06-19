@@ -13,21 +13,21 @@ export default function Home() {
       name: "Nguyễn Văn A",
       rating: 5,
       content: "Dịch vụ rất tốt, nhân viên thân thiện và chuyên nghiệp. Thú cưng của tôi rất thích.",
-      avatar: "/pet-login.jpg"
+      avatar: "/images/pet-login.jpg"
     },
     {
       id: 2,
       name: "Trần Thị B",
       rating: 5,
       content: "Môi trường sạch sẽ, an toàn. Giá cả hợp lý. Sẽ quay lại nhiều lần nữa.",
-      avatar: "/pet-login.jpg"
+      avatar: "/images/pet-login.jpg"
     },
     {
       id: 3,
       name: "Lê Văn C",
       rating: 5,
       content: "Đội ngũ bác sĩ rất giỏi và tận tâm. Cảm ơn đã chăm sóc tốt cho thú cưng của tôi.",
-      avatar: "/pet-login.jpg"
+      avatar: "/images/pet-login.jpg"
     }
   ];
 
@@ -122,7 +122,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="relative h-[400px]">
               <Image
-                src="/pet-login.jpg"
+                src="/images/pet-login.jpg"
                 alt="Pet Center"
                 fill
                 className="rounded-lg object-cover"

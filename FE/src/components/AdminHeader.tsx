@@ -55,7 +55,7 @@ export default function AdminHeader() {
       <div className="flex-1">
         <Link href="/" className="text-xl font-bold flex items-center gap-2">
           {/* Logo can be replaced with an actual image or SVG */}
-          <img src="/images/logo.jpg" alt="Logo" className="h-10" />
+          <img src="/images/logo.png" alt="Logo" className="h-10" />
           <span className="text-orange-500">Pet House</span>
         </Link>
       </div>
