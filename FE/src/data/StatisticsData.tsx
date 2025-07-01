@@ -1,6 +1,8 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
+import { dashboardAPI } from '@/app/APIRoute';
 import type { APIResponse } from '@/types/interfaces';
-import type { StatisticsData, OverviewStats, RevenueData, BookingStatusData, TopService, TopCustomer, ReviewStats, RecentReview } from '@/types/statistics';
+import type { StatisticsData, OverviewStats, RevenueData, BookingStatusData, TopService, TopCustomer, ReviewStats, RecentReview, DashboardResponse } from '@/types/statistics';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
@@ -103,12 +105,42 @@ const mockRecentReviews: RecentReview[] = [
 ];
 
 export const statisticsService = {
-  // Fetch tất cả dữ liệu thống kê
+  // Fetch dashboard data từ API thật
+  async getDashboardStats(): Promise<DashboardResponse> {
+    try {
+      // Gọi API dashboard thật với authentication
+      const response = await axios.get<APIResponse<DashboardResponse>>(`${dashboardAPI}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get('accessToken')}`,
+        },
+      });
+      return response.data.result;
+    } catch (error) {
+      console.warn('Dashboard API error, sử dụng mock data:', error);
+      // Nếu API lỗi, trả về mock data
+      return {
+        overviewStats: mockOverviewStats,
+        revenueChart: mockRevenueData,
+        topServices: mockTopServices,
+        topCustomers: mockTopCustomers
+      };
+    }
+  },
+
+  // Fetch tất cả dữ liệu thống kê (compatibility với code cũ)
   async getAllStatistics(): Promise<StatisticsData> {
     try {
-      // Thử gọi API thật trước
-      const response = await axios.get<APIResponse<StatisticsData>>(`${API_BASE_URL}/api/admin/statistics`);
-      return response.data.result;
+      // Gọi dashboard API thật trước
+      const dashboardResponse = await this.getDashboardStats();
+      
+      return {
+        overview: dashboardResponse.overviewStats,
+        revenueChart: dashboardResponse.revenueChart,
+        topServices: dashboardResponse.topServices,
+        topCustomers: dashboardResponse.topCustomers,
+        reviewStats: mockReviewStats, // Vẫn dùng mock cho reviews
+        recentReviews: mockRecentReviews // Vẫn dùng mock cho reviews
+      };
     } catch (error) {
       console.warn('API chưa có, sử dụng mock data:', error);
       // Nếu API chưa có, trả về mock data
