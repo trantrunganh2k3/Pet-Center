@@ -5,6 +5,7 @@ import Rate from "antd/es/rate";
 import { toast } from "react-toastify";
 import "../styles.css";
 import { ArrowLeftOutlined, ArrowUpOutlined, ArrowDownOutlined, ClockCircleOutlined, LoadingOutlined } from "@ant-design/icons";
+import GlobalLoading from "@/components/GlobalLoading";
 import { UpdateStatusModal } from "@/app/components/booking/UpdateStatusModal";
 import { useRouter } from "next/navigation";
 import { bookingAPI, subServiceAPI, staffAPI } from "@/app/APIRoute";
@@ -238,8 +239,46 @@ export default function BookingDetailsPage({ params }: { params: Promise<{ id: s
 
   if (loading || !booking) {
     return (
-      <div className="h-screen flex items-center justify-center">
-        <Spin size="large" />
+      <div className="p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <div className="h-8 bg-gray-200 rounded w-24 animate-pulse"></div>
+            <div className="h-8 bg-gray-200 rounded w-64 animate-pulse"></div>
+            <div className="h-8 bg-gray-200 rounded w-40 animate-pulse"></div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="md:col-span-2 bg-white p-6 rounded-lg border animate-pulse">
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+              </div>
+            </div>
+            <div className="md:col-span-1 bg-white p-6 rounded-lg border animate-pulse">
+              <div className="space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <div className="flex justify-between items-center mb-4">
+              <div className="h-6 bg-gray-200 rounded w-32 animate-pulse"></div>
+              <div className="h-8 bg-gray-200 rounded w-40 animate-pulse"></div>
+            </div>
+            <div className="flex space-x-2 mb-4">
+              <div className="h-8 bg-gray-200 rounded w-16 animate-pulse"></div>
+              <div className="h-8 bg-gray-200 rounded w-20 animate-pulse"></div>
+              <div className="h-8 bg-gray-200 rounded w-24 animate-pulse"></div>
+            </div>
+          </div>
+
+          <GlobalLoading type="table" rows={5} />
+        </div>
       </div>
     );
   }

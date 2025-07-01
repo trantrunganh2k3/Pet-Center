@@ -8,6 +8,7 @@ import Cookies from "js-cookie"; // Cần cài đặt: npm install js-cookie
 import { authenticateAPI } from "@/app/APIRoute";
 import axios from "axios";
 import { toast } from "react-toastify";
+import GlobalLoading from "./GlobalLoading";
 
 export default function AuthButtons() {
   const router = useRouter();
