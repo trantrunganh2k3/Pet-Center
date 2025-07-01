@@ -34,7 +34,7 @@ vnp:
   return-url: http://localhost:8080/petcenter/payment/vnpay/return
 
 fe:
-  success-url: http://localhost:3000/invoice/<id>/vnpay
+  success-url: http://localhost:3000/admin/vnpay
 
 
 

@@ -1,7 +1,7 @@
 export interface OverviewStats {
   todayBookings: number;
   totalBookings: number;
-  totalCustomers: number;
+  todayRevenue: number;
   totalRevenue: number;
 }
 
@@ -51,7 +51,6 @@ export interface RecentReview {
 export interface StatisticsData {
   overview: OverviewStats;
   revenueChart: RevenueData[];
-  bookingStatus: BookingStatusData[];
   topServices: TopService[];
   topCustomers: TopCustomer[];
   reviewStats: ReviewStats;
