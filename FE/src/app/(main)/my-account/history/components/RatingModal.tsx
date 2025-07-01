@@ -47,7 +47,7 @@ export default function RatingModal({ booking, visible, onClose }: RatingModalPr
                 }
             );
             if (response.data.code !== 1000) {
-                toast.error(response.data.message || 'Failed to submit rating');
+                toast.error(response.data.message || 'Đánh giá không thành công!');
                 return;
             }
             toast.success('Đánh giá đã được gửi thành công');

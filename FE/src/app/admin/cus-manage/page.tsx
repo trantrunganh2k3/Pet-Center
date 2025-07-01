@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useCustomers } from '../../../data/CustomersData';
 import { usePets } from '../../../data/PetsData';
 import { Customer, CustomerFormData, Pet } from '../../../types/interfaces';
@@ -35,7 +35,6 @@ const Customers = () => {
         customers, 
         loading, 
         error, 
-        fetchCustomers, 
         updateCustomer, 
         deleteCustomer,
         createCustomer,

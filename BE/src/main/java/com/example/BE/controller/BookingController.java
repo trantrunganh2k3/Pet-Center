@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Slf4j
@@ -70,10 +71,4 @@ public class BookingController {
                 .result(bookingService.evaluateBooking(bookingId, evaluate))
                 .build();
     }
-
-//    @DeleteMapping
-//    ApiResponse<BookingResponse> deleteBooking(@RequestParam("bookingId") String bookingId) {
-//
-//    }
-
 }

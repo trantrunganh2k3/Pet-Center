@@ -17,7 +17,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if(!username || !password) {
-      toast.error('Please enter a valid username and password.');
+      toast.error('Hãy nhập tên tài khoản và mật khẩu của bạn.');
       console.log('Please enter a valid username and password.');
       return;
     }
@@ -47,10 +47,10 @@ const Login = () => {
       
       if (data.code !== 1000) {
         // Hiển thị thông báo lỗi từ server
-        toast.error(data.message || 'Login failed');
+        toast.error(data.message || 'Đăng nhập thất bại');
       } else {
         // Xử lý đăng nhập thành công
-        toast.success("Login successful!");
+        toast.success("Đăng nhập thành công!");
         
       // Giải mã token và chuyển hướng
         if (data.result.token) {
@@ -86,7 +86,7 @@ const Login = () => {
         }
       }
     }catch(error){
-      toast.error("Login failed. Please check your credentials.");
+      toast.error("Đăng nhập thất bại. Hãy kiểm tra lại!");
     }
   };
 

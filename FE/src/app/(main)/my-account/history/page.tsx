@@ -39,7 +39,7 @@ export default function HistoryPage() {
                 withCredentials: true,
             });
                 if (response.data.code !== 1000) {
-                    toast.error(response.data.message || 'Failed to fetch bookings');
+                    toast.error(response.data.message || 'Tải lịch sử đặt lịch thất bại!');
                     throw new Error(response.data.message || 'Failed to fetch bookings');
                 }else {
                     const data = response.data.result;
@@ -70,12 +70,12 @@ export default function HistoryPage() {
                 }
             );
             if (response.data.code !== 1000) {
-                toast.error(response.data.message || 'Failed to fetch booking details');
+                toast.error(response.data.message || 'Không thể tải chi tiết đặt lịch!');
                 throw new Error(response.data.message || 'Failed to fetch booking details');
             }
             setBookingDetails(response.data.result);
         } catch (error) {
-            toast.error('Không thể tải chi tiết đặt lịch');
+            toast.error('Không thể tải chi tiết đặt lịch!');
             setSelectedBooking(null);
         }
     };

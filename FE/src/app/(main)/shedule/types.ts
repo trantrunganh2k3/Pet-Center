@@ -14,8 +14,9 @@ export interface Pet {
   petId: string;
   name: string;
   type: string;
-  breed: string;
-  image: string;
+  species: string;
+  age: number;
+  weight: number;
 }
 
 export interface SubService {

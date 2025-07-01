@@ -48,7 +48,7 @@ export default function AccountPage() {
 
         const data = response.data as { code: number; message?: string; result: { name: string; email: string; dob: string; address: string; phone: string } };
         if (data.code !== 1000) {
-          toast.error(data.message || 'Failed to fetch user data');
+          toast.error(data.message || 'Tải thông tin người dùng thất bại!');
         } else {
           const userData = {
             name: data.result.name,
