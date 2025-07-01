@@ -71,7 +71,7 @@ const Login = () => {
           if (roles && Array.isArray(roles)) {
             if (roles.includes("ADMIN") || roles.includes("STAFF")) {
               console.log("Redirecting to admin dashboard");
-              router.push('/admin');
+              router.push('/admin/shedule-manage');
             } else if (roles.includes("CUSTOMER")) {
               console.log("Redirecting to user dashboard");
               router.push('/');
