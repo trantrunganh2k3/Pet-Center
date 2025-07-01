@@ -3,22 +3,38 @@
 import React from 'react';
 import { Button, message } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
-import { useStatistics } from './hooks/useStatistics';
+import { useOverviewStats } from './hooks/useOverviewStats';
+import { useChartData } from './hooks/useChartData';
+import { useTopRankings } from './hooks/useTopRankings';
+import { useReviewData } from './hooks/useReviewData';
 import OverviewCards from './components/OverviewCards';
 import RevenueChart from './components/RevenueChart';
-import BookingStatusChart from './components/BookingStatusChart';
 import TopServices from './components/TopServices';
 import TopCustomers from './components/TopCustomers';
 import ReviewsOverview from './components/ReviewsOverview';
 import RecentReviews from './components/RecentReviews';
 
 export default function AdminPage() {
-  const { data, loading, error, refreshData } = useStatistics();
+  // Progressive loading với các hooks riêng biệt
+  const overviewStats = useOverviewStats();
+  const chartData = useChartData();
+  const topRankings = useTopRankings();
+  const reviewData = useReviewData();
 
   const handleRefresh = () => {
-    refreshData();
+    overviewStats.refreshData();
+    chartData.refreshData();
+    topRankings.refreshData();
+    reviewData.refreshData();
     message.success('Đã làm mới dữ liệu thống kê');
   };
+
+  // Show any error from any hook
+  const hasError = overviewStats.error || chartData.error || topRankings.error || reviewData.error;
+  const errorMessage = overviewStats.error || chartData.error || topRankings.error || reviewData.error;
+
+  // Overall loading state
+  const isLoading = overviewStats.loading || chartData.loading || topRankings.loading || reviewData.loading;
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
@@ -36,7 +52,7 @@ export default function AdminPage() {
           type="primary" 
           icon={<ReloadOutlined />}
           onClick={handleRefresh}
-          loading={loading}
+          loading={isLoading}
           className="shadow-md"
         >
           Làm mới
@@ -44,52 +60,48 @@ export default function AdminPage() {
       </div>
 
       {/* Error state */}
-      {error && (
+      {hasError && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="text-red-800 font-medium">Lỗi tải dữ liệu</div>
-          <div className="text-red-600 text-sm mt-1">{error}</div>
+          <div className="text-red-600 text-sm mt-1">{errorMessage}</div>
         </div>
       )}
 
-      {/* Overview Cards */}
+      {/* Overview Cards - Load đầu tiên */}
       <OverviewCards 
-        data={data?.overview || null} 
-        loading={loading} 
+        data={overviewStats.data} 
+        loading={overviewStats.loading} 
       />
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Charts Section - Load thứ 2 */}
+      <div className="grid grid-cols-1 gap-6">
         <RevenueChart 
-          data={data?.revenueChart || null} 
-          loading={loading} 
-        />
-        <BookingStatusChart 
-          data={data?.bookingStatus || null} 
-          loading={loading} 
+          data={chartData.data} 
+          loading={chartData.loading} 
         />
       </div>
 
-      {/* Top Rankings Section */}
+      {/* Top Rankings Section - Load thứ 3 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TopServices 
-          data={data?.topServices || null} 
-          loading={loading} 
+          data={topRankings.topServices} 
+          loading={topRankings.servicesLoading} 
         />
         <TopCustomers 
-          data={data?.topCustomers || null} 
-          loading={loading} 
+          data={topRankings.topCustomers} 
+          loading={topRankings.customersLoading} 
         />
       </div>
 
-      {/* Reviews Section */}
+      {/* Reviews Section - Load cuối cùng */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ReviewsOverview 
-          data={data?.reviewStats || null} 
-          loading={loading} 
+          data={reviewData.reviewStats} 
+          loading={reviewData.statsLoading} 
         />
         <RecentReviews 
-          data={data?.recentReviews || null} 
-          loading={loading} 
+          data={reviewData.recentReviews} 
+          loading={reviewData.reviewsLoading} 
         />
       </div>
 

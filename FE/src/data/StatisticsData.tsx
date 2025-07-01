@@ -8,7 +8,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 const mockOverviewStats: OverviewStats = {
   todayBookings: 3,
   totalBookings: 10,
-  totalCustomers: 5,
+  todayRevenue: 450000,
   totalRevenue: 2500000
 };
 
@@ -115,7 +115,6 @@ export const statisticsService = {
       return {
         overview: mockOverviewStats,
         revenueChart: mockRevenueData,
-        bookingStatus: mockBookingStatus,
         topServices: mockTopServices,
         topCustomers: mockTopCustomers,
         reviewStats: mockReviewStats,

@@ -10,5 +10,5 @@ vnp:
   return-url: http://14.225.220.204:8080/petcenter/payment/vnpay/return
 
 fe:
-  success-url: http://14.225.220.204:3000/invoice/vnpay
+  success-url: http://14.225.220.204:3000/admin/vnpay
 

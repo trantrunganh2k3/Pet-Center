@@ -54,11 +54,12 @@ const OverviewCards: React.FC<OverviewCardsProps> = ({ data, loading }) => {
       bgColor: 'bg-green-50'
     },
     {
-      title: 'Tổng Khách Hàng',
-      value: data?.totalCustomers || 0,
-      icon: <UserOutlined className="text-purple-500" />,
+      title: 'Doanh Thu Hôm Nay',
+      value: data?.todayRevenue || 0,
+      icon: <DollarOutlined className="text-purple-500" />,
       color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      bgColor: 'bg-purple-50',
+      formatter: formatCurrency
     },
     {
       title: 'Tổng Doanh Thu',
