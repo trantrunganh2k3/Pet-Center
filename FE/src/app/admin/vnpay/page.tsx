@@ -3,6 +3,8 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { paymentAPI } from '@/app/APIRoute';
+import Cookies from 'js-cookie';
 
 export default function PaymentResult() {
   const searchParams = useSearchParams();
@@ -12,19 +14,24 @@ export default function PaymentResult() {
 
   useEffect(() => {
     if (!payment) return;
-    axios.get(`/api/payment/payment/${payment}`)
-      .then(({ data }) => {
-        if (data.result && data.result.paid) {
-          setStatus('success');
-        } else {
-          setStatus('fail');
-        }
-      })
-      .catch(() => setStatus('fail'));
-  }, [payment]);
+    axios.get(`${paymentAPI}/payment/${payment}`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("accessToken")}`  // thay token bằng biến bạn đang dùng
+      }
+    })
+    .then(({ data }) => {
+      console.log('Payment data:', data);
+      if (data.result && data.result.paid) {
+        setStatus('success');
+      } else {
+        setStatus('fail');
+      }
+    })
+    .catch(() => setStatus('fail'));}
+  , [payment]);
 
   const handleBackToSchedule = () => {
-    router.push('/shedule');
+    router.push('/admin/schedule-manage');
   };
 
   const renderContent = () => {
@@ -75,11 +82,11 @@ export default function PaymentResult() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Quay về trang đặt lịch
+            Quay về trang quản lý lịch đặt
           </button>
           
           <button 
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/admin')}
             className="w-full bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
           >
             Về trang chủ
