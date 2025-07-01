@@ -4,6 +4,7 @@ import "./styles.css";
 import { Table, Select, DatePicker, Input, Button, Tag, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { SearchOutlined, FilterOutlined, LoadingOutlined, DollarOutlined } from "@ant-design/icons";
+import GlobalLoading from "@/components/GlobalLoading";
 import PaymentModal from "@/app/components/payment/PaymentModal";
 import ViewInvoiceModal from "@/app/components/payment/ViewInvoiceModal";
 import { bookingAPI, subServiceAPI } from "@/app/APIRoute";
@@ -340,6 +341,17 @@ const ScheduleManagePage = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <GlobalLoading 
+        type="page" 
+        rows={8} 
+        showHeader={true} 
+        showFilters={true} 
+      />
+    );
+  }
+
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -391,7 +403,7 @@ const ScheduleManagePage = () => {
       </div>
 
       <Table
-        loading={loading}
+        loading={false}
         columns={columns}
         dataSource={filteredData}
         rowKey="bookingId"

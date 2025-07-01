@@ -79,7 +79,7 @@ public class VnPayGateway implements PaymentGateway {
 
         return new GatewayResult(
                 isSuccess,
-                params.get("vnp_TXnRef"),
+                params.get("vnp_TxnRef"),
                 params.get("vnp_TransactionNo"),
                 responseCode
         );
