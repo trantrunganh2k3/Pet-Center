@@ -48,6 +48,13 @@ export interface RecentReview {
   createdDate: string;
 }
 
+export interface DashboardResponse {
+  overviewStats: OverviewStats;
+  revenueChart: RevenueData[];
+  topServices: TopService[];
+  topCustomers: TopCustomer[];
+}
+
 export interface StatisticsData {
   overview: OverviewStats;
   revenueChart: RevenueData[];
