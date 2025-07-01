@@ -47,7 +47,7 @@ const Login = () => {
       
       if (data.code !== 1000) {
         // Hiển thị thông báo lỗi từ server
-        toast.error(data.message || 'Đăng nhập thất bại');
+        toast.error('Đăng nhập thất bại');
       } else {
         // Xử lý đăng nhập thành công
         toast.success("Đăng nhập thành công!");
@@ -71,7 +71,7 @@ const Login = () => {
           if (roles && Array.isArray(roles)) {
             if (roles.includes("ADMIN") || roles.includes("STAFF")) {
               console.log("Redirecting to admin dashboard");
-              router.push('/admin/shedule-manage');
+              router.push('/admin/schedule-manage');
             } else if (roles.includes("CUSTOMER")) {
               console.log("Redirecting to user dashboard");
               router.push('/');

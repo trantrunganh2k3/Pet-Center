@@ -25,4 +25,5 @@ public class PaymentResponse {
     BigInteger discount;
     BigInteger tax;
     BigDecimal total;
+    boolean paid;
 }

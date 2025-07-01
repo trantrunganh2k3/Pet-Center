@@ -64,7 +64,7 @@ const Register = () => {
       
       if (data.code !== 1000) {
         // Hiển thị thông báo lỗi từ server
-        toast.error(data.message || 'Đăng ký thất bại!');
+        toast.error('Đăng ký thất bại!');
       } else {
         // Xử lý đăng nhập thành công
         toast.success("Đăng ký thành công!");
