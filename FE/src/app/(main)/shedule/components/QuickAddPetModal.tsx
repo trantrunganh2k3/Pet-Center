@@ -16,8 +16,9 @@ const QuickAddPetModal: React.FC<QuickAddPetModalProps> = ({
 }) => {
   const [name, setName] = useState('');
   const [type, setType] = useState('Chó');
-  const [breed, setBreed] = useState('');
-  const [image, setImage] = useState('');
+  const [species, setSpecies] = useState('');
+  const [age, setAge] = useState<number>(0);
+  const [weight, setWeight] = useState<number>(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +26,9 @@ const QuickAddPetModal: React.FC<QuickAddPetModalProps> = ({
       await onSubmit({
         name,
         type,
-        breed,
-        image: image || '/images/dog.jpg', // Sử dụng ảnh mặc định nếu không upload
+        species,
+        age,
+        weight,
       });
       resetForm();
       onClose();
@@ -38,8 +40,9 @@ const QuickAddPetModal: React.FC<QuickAddPetModalProps> = ({
   const resetForm = () => {
     setName('');
     setType('Chó');
-    setBreed('');
-    setImage('');
+    setSpecies('');
+    setAge(0);
+    setWeight(0);
   };
 
   if (!isOpen) return null;
@@ -80,12 +83,12 @@ const QuickAddPetModal: React.FC<QuickAddPetModalProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Giống
+                Giống loài
               </label>
               <input
                 type="text"
-                value={breed}
-                onChange={(e) => setBreed(e.target.value)}
+                value={species}
+                onChange={(e) => setSpecies(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               />
@@ -93,14 +96,30 @@ const QuickAddPetModal: React.FC<QuickAddPetModalProps> = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Hình ảnh (tùy chọn)
+                Tuổi
               </label>
               <input
-                type="text"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-                placeholder="URL hình ảnh"
+                type="number"
+                value={age}
+                onChange={(e) => setAge(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                min="0"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Cân nặng (kg)
+              </label>
+              <input
+                type="number"
+                value={weight}
+                onChange={(e) => setWeight(Number(e.target.value))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                min="0"
+                step="0.1"
+                required
               />
             </div>
           </div>

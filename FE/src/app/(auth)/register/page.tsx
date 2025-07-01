@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from "react";
@@ -6,7 +5,6 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { registerAPI } from "@/app/APIRoute";
 import { toast } from "react-toastify";
-import Cookies from "js-cookie";
 import { UserOutlined, KeyOutlined, HomeOutlined } from "@ant-design/icons";
 import Link from "next/link";
 
@@ -75,7 +73,7 @@ const Register = () => {
         router.push("/login");
       }
     }catch(error){
-      toast.error("Login failed. Please check your credentials.");
+      toast.error("Đăng ký thất bại. Hãy kiểm tra lại!");
     }
   };
 

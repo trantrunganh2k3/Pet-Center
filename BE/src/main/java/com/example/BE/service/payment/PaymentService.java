@@ -36,10 +36,21 @@ public class PaymentService {
         Booking booking = bookingRepository.findById(paymentRequest.getBookingId())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
-        booking.setStatus(BookingStatus.Paid);
-        bookingRepository.save(booking);
+        Payment existingPayment = paymentRepository.findByBookingBookingId(paymentRequest.getBookingId());
+
+        if (existingPayment != null) {
+            if(!existingPayment.isPaid()){
+                paymentRepository.delete(existingPayment);
+            } else {
+                throw new AppException(ErrorCode.PAYMENT_PAID);
+            }
+        }
 
         Payment payment = paymentMapper.toPayment(paymentRequest);
+        if(paymentRequest.getMethod() == PaymentMethod.Cash){
+            booking.setStatus(BookingStatus.Paid);
+            payment.setPaid(true);
+        }
         payment.setBooking(booking);
 
         return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
@@ -71,7 +82,7 @@ public class PaymentService {
         PaymentGateway paymentGateway = paymentGatewayFactory.of(method);
         PaymentGateway.GatewayResult result = paymentGateway.verifyCallback(params);
         if(!result.success())
-            throw new AppException(ErrorCode.INVALID_KEY);
+            throw new AppException(ErrorCode.PAYMENT_FAILED);
 
         Payment payment = paymentRepository.findById(result.paymentId())
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_NOT_FOUND));
@@ -79,6 +90,9 @@ public class PaymentService {
         if(!payment.isPaid()){
             payment.markPaid(result.gatewayTxnNo());
             paymentRepository.save(payment);
+            Booking booking = payment.getBooking();
+            booking.setStatus(BookingStatus.Paid);
+            bookingRepository.save(booking);
         }
 
         return payment.getPaymentId();

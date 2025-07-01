@@ -60,16 +60,29 @@ public class VnPayGateway implements PaymentGateway {
     public GatewayResult verifyCallback(Map<String, String> p) {
         Map<String, String> params = new TreeMap<>(p);
         String receivedHash = params.remove("vnp_SecureHash");
+        String responseCode = params.get("vnp_ResponseCode");
+        String transactionStatus = params.get("vnp_TransactionStatus");
+
         String data = params.entrySet().stream()
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.joining("&"));
+
         boolean ok = receivedHash != null && receivedHash.equalsIgnoreCase(hmacSHA512(hashSecret, data))
                 && "00".equals(params.get("vnp_ResponseCode"));
 
-        return new GatewayResult(ok,
-                params.get("vnp_TxnRef"),
+        boolean isHashValid = receivedHash != null &&
+                receivedHash.equalsIgnoreCase(hmacSHA512(hashSecret, data));
+
+        boolean isSuccess = isHashValid &&
+                "00".equals(responseCode) &&
+                "00".equals(transactionStatus);
+
+        return new GatewayResult(
+                isSuccess,
+                params.get("vnp_TXnRef"),
                 params.get("vnp_TransactionNo"),
-                params.get("vnp_ResponseCode"));
+                responseCode
+        );
     }
 
     // ------------- helper -------------

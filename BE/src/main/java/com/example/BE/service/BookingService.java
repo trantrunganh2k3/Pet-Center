@@ -110,15 +110,12 @@ public class BookingService {
         return bookingMapper.toBookingResponse(bookingRepository.save(booking));
     }
 
-    /**
-     * Class đơn giản hóa chỉ chứa ID dịch vụ và ID nhân viên
-     */
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Evaluate {
-        private String comment;   // ID của dịch vụ đã có trong hệ thống
-        private int rating;  // ID của nhân viên được phân công
+        private String comment;
+        private int rating;
     }
 
     public void deleteBooking(String bookingId) {
